@@ -10,15 +10,15 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.example.youthspots.R
-import com.example.youthspots.ui.viewmodel.ActivityViewModel
+import com.example.youthspots.ui.viewmodel.SharedViewModel
 import com.example.youthspots.ui.viewmodel.PointAddViewModel
 
 class PointAddFragment : Fragment() {
 
-    private lateinit var viewModel: PointAddViewModel
-    private val activityViewModel: ActivityViewModel by activityViewModels()
+    private val viewModel: PointAddViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +41,8 @@ class PointAddFragment : Fragment() {
             // for ActivityCompat#requestPermissions for more details.
             Log.d("TEST", "dsadsa")
         } else {
-            activityViewModel.locationProvider.lastLocation.addOnSuccessListener {
+            sharedViewModel.locationProvider.lastLocation.addOnSuccessListener {
+                viewModel.location = it
                 if (it == null) {
                     Log.d("TEST", "null")
                 } else {
@@ -51,11 +52,4 @@ class PointAddFragment : Fragment() {
         }
         return inflater.inflate(R.layout.point_add_fragment, container, false)
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(PointAddViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
 }
