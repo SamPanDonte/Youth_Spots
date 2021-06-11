@@ -1,4 +1,4 @@
-package com.example.youthspots.ui.fragments
+package com.example.youthspots.ui.fragment
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat

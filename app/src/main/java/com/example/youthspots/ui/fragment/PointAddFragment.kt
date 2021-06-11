@@ -1,4 +1,4 @@
-package com.example.youthspots.ui.fragments
+package com.example.youthspots.ui.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -13,12 +13,10 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.youthspots.R
 import com.example.youthspots.databinding.PointAddFragmentBinding
-import com.example.youthspots.ui.viewmodel.BaseViewModel
 import com.example.youthspots.ui.viewmodel.PointAddViewModel
 import com.example.youthspots.utils.PermissionUtils
 import com.google.android.gms.location.FusedLocationProviderClient

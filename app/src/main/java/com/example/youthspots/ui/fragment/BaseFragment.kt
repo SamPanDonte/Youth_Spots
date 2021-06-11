@@ -1,4 +1,4 @@
-package com.example.youthspots.ui.fragments
+package com.example.youthspots.ui.fragment
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController

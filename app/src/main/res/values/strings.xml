@@ -29,4 +29,7 @@
     <string name="password">Password</string>
     <string name="log_in">Log in</string>
     <string name="register">Register</string>
+    <string name="pictures">Pictures</string>
+    <string name="comments">Comments</string>
+    <string name="image_of_point">Image of point</string>
 </resources>

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.example.youthspots.ui.fragments.MapsFragment"
+        android:name="com.example.youthspots.ui.fragment.MapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" >
         <action
@@ -16,11 +16,11 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.youthspots.ui.fragments.SettingsFragment"
+        android:name="com.example.youthspots.ui.fragment.SettingsFragment"
         android:label="SettingsFragment" />
     <fragment
         android:id="@+id/pointDetailsFragment"
-        android:name="com.example.youthspots.ui.fragments.PointDetailsFragment"
+        android:name="com.example.youthspots.ui.fragment.PointDetailsFragment"
         android:label="fragment_point_details"
         tools:layout="@layout/fragment_point_details" >
         <action
@@ -30,14 +30,40 @@
             android:name="pointId"
             app:argType="long"
             android:defaultValue="0L" />
+        <action
+            android:id="@+id/action_pointDetailsFragment_to_commentViewFragment"
+            app:destination="@id/commentViewFragment" />
+        <action
+            android:id="@+id/action_pointDetailsFragment_to_imagesViewFragment"
+            app:destination="@id/imagesViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/pointAddFragment"
-        android:name="com.example.youthspots.ui.fragments.PointAddFragment"
+        android:name="com.example.youthspots.ui.fragment.PointAddFragment"
         android:label="point_add_fragment"
         tools:layout="@layout/point_add_fragment" >
         <action
             android:id="@+id/action_pointAddFragment_to_mapsFragment"
             app:destination="@id/mapsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/commentViewFragment"
+        android:name="com.example.youthspots.ui.fragment.CommentViewFragment"
+        android:label="fragment_comment_view"
+        tools:layout="@layout/fragment_comment_view" >
+        <argument
+            android:name="pointId"
+            app:argType="long"
+            android:defaultValue="0L" />
+    </fragment>
+    <fragment
+        android:id="@+id/imagesViewFragment"
+        android:name="com.example.youthspots.ui.fragment.ImageViewFragment"
+        android:label="fragment_images_view"
+        tools:layout="@layout/fragment_images_view">
+        <argument
+            android:name="pointId"
+            app:argType="long"
+            android:defaultValue="0L" />
     </fragment>
 </navigation>

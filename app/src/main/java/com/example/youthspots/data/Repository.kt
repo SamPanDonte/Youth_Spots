@@ -41,4 +41,8 @@ object Repository {
     }
 
     fun userLoggedIn() = MainApplication.context.getSharedPreferences(PREFERENCES_TAG, Context.MODE_PRIVATE).contains(LOGIN_TAG)
+
+    fun getComments(pointId: Long) = database.getPointCommentDao().getComments(pointId)
+
+    fun getImages(pointId: Long) = database.getPointImageDao().getImages(pointId)
 }
