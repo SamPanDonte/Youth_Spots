@@ -58,6 +58,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         )) {
             map.isMyLocationEnabled = true
         }
+
         map.moveCamera(
             CameraUpdateFactory.newCameraPosition(
                 CameraPosition(
@@ -76,6 +77,17 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                     .title("${point.name} ${point.author} ${point.description}")
                 )
             }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (this::map.isInitialized) {
+            sharedViewModel.cameraBearing = map.cameraPosition.bearing
+            sharedViewModel.cameraLatitude = map.cameraPosition.target.latitude
+            sharedViewModel.cameraLongitude = map.cameraPosition.target.longitude
+            sharedViewModel.cameraTilt = map.cameraPosition.tilt
+            sharedViewModel.cameraZoom = map.cameraPosition.zoom
         }
     }
 }
