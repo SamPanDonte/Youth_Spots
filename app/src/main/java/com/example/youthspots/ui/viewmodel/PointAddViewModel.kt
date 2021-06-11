@@ -17,8 +17,7 @@ class PointAddViewModel : BaseViewModel() {
     val description: MutableLiveData<String> = MutableLiveData()
     val pointTypes = Repository.getPointTypes().asLiveData()
     var pointType: Int? = null
-    //TODO chosen point
-    val author = "This user" // TODO
+    private val author = Repository.getFromSharedPreferences(Repository.LOGIN_TAG)
 
     fun submit() {
         if (location == null || name.value == null || name.value == "" || description.value == null ||
@@ -26,7 +25,8 @@ class PointAddViewModel : BaseViewModel() {
             Toast.makeText(MainApplication.context, "Fulfill all fields!", Toast.LENGTH_LONG).show()
             return
         }
-        Repository.addPoint(Point(name.value!!, description.value!!, author, location!!.longitude, location!!.latitude))
+
+        Repository.addPoint(Point(name.value!!, description.value!!, author, location!!.longitude, location!!.latitude, 0, pointTypes.value?.get(pointType!!)?.id!!))
         navigateToFragment.value = Event(R.id.action_pointAddFragment_to_mapsFragment)
     }
 }
