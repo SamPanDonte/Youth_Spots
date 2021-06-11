@@ -3,6 +3,7 @@ package com.example.youthspots.data
 import android.content.Context
 import com.example.youthspots.MainApplication
 import com.example.youthspots.data.entity.Point
+import com.example.youthspots.data.entity.PointComment
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 
@@ -45,4 +46,6 @@ object Repository {
     fun getComments(pointId: Long) = database.getPointCommentDao().getComments(pointId)
 
     fun getImages(pointId: Long) = database.getPointImageDao().getImages(pointId)
+
+    fun addComment(pointComment: PointComment) = database.getPointCommentDao().insert(pointComment)
 }

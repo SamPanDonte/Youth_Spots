@@ -18,4 +18,8 @@ class ImageViewModel(private val pointId: Long) : ViewModel() {
     }
 
     val images: LiveData<List<PointImage>> = Repository.getImages(pointId).asLiveData()
+
+    fun addImage() {
+        // TODO
+    }
 }

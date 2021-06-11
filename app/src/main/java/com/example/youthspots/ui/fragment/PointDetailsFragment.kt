@@ -32,5 +32,6 @@ class PointDetailsFragment : BaseFragment() {
             viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
         }
+        observeModelNavigation(mViewModel)
     }
 }

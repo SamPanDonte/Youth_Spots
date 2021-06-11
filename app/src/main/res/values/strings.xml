@@ -32,4 +32,7 @@
     <string name="pictures">Pictures</string>
     <string name="comments">Comments</string>
     <string name="image_of_point">Image of point</string>
+    <string name="add_comment">Add comment</string>
+    <string name="comment_autofill">Write comment...</string>
+    <string name="add_image">Add image</string>
 </resources>

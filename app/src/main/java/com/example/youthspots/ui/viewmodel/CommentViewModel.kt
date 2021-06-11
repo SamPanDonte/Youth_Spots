@@ -1,9 +1,8 @@
 package com.example.youthspots.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
+import android.widget.Toast
+import androidx.lifecycle.*
+import com.example.youthspots.MainApplication
 import com.example.youthspots.data.Repository
 import com.example.youthspots.data.entity.PointComment
 
@@ -18,4 +17,18 @@ class CommentViewModel(private val pointId: Long) : ViewModel() {
     }
 
     val comments: LiveData<List<PointComment>> = Repository.getComments(pointId).asLiveData()
+    val comment: MutableLiveData<String> = MutableLiveData()
+
+    fun addComment() {
+        if (comment.value == null || comment.value == "") {
+            Toast.makeText(MainApplication.context, "You must fulfil comment!", Toast.LENGTH_LONG).show()
+            return
+        }
+        // TODO Interent
+        Repository.addComment(PointComment(
+            comment.value!!,
+            pointId,
+            Repository.getFromSharedPreferences(Repository.LOGIN_TAG),
+        ))
+    }
 }
