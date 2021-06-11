@@ -1,9 +1,8 @@
-package com.example.youthspots.ui
+package com.example.youthspots.ui.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,21 +21,12 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
-class MapsFragment : Fragment(), OnMapReadyCallback {
+class MapsFragment : BaseFragment(), OnMapReadyCallback {
     private val sharedViewModel: SharedViewModel by activityViewModels()
-
     lateinit var map : GoogleMap
-    @SuppressLint("MissingPermission")
-    private val requestPermission = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) {
-        if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
-            it[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
-            map.isMyLocationEnabled = true
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_maps, container, false)
@@ -45,6 +35,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        observeModelNavigation(sharedViewModel)
         mapFragment?.getMapAsync(this)
     }
 
@@ -58,7 +49,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         )) {
             map.isMyLocationEnabled = true
         }
-
+        map.setOnMarkerClickListener(sharedViewModel)
         map.moveCamera(
             CameraUpdateFactory.newCameraPosition(
                 CameraPosition(
@@ -69,13 +60,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 )
             )
         )
-
         Repository.getPoints().asLiveData().observe(viewLifecycleOwner) {
             for (point in it) {
                 map.addMarker(MarkerOptions()
                     .position(LatLng(point.latitude, point.longitude))
-                    .title("${point.name} ${point.author} ${point.description}")
-                )
+                    .title(point.name)
+                )?.let { marker ->
+                    sharedViewModel.markers.add(Pair(point, marker))
+                }
+
             }
         }
     }

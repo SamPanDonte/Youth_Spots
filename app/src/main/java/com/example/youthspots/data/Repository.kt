@@ -19,6 +19,8 @@ object Repository {
 
     fun getPoints() = database.getPointDao().getPoints()
 
+    fun getPoint(id: Long) = database.getPointDao().getPoint(id)
+
     fun getPointTypes() = database.getPointTypeDao().getPointTypes()
 
     fun addPoint(point: Point) {

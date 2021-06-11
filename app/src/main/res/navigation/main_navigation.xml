@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.example.youthspots.ui.MapsFragment"
+        android:name="com.example.youthspots.ui.fragments.MapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" >
         <action
@@ -16,20 +16,24 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.youthspots.ui.SettingsFragment"
+        android:name="com.example.youthspots.ui.fragments.SettingsFragment"
         android:label="SettingsFragment" />
     <fragment
         android:id="@+id/pointDetailsFragment"
-        android:name="com.example.youthspots.ui.PointDetailsFragment"
+        android:name="com.example.youthspots.ui.fragments.PointDetailsFragment"
         android:label="fragment_point_details"
         tools:layout="@layout/fragment_point_details" >
         <action
             android:id="@+id/action_pointDetailsFragment_to_mapsFragment"
             app:destination="@id/mapsFragment" />
+        <argument
+            android:name="pointId"
+            app:argType="long"
+            android:defaultValue="0L" />
     </fragment>
     <fragment
         android:id="@+id/pointAddFragment"
-        android:name="com.example.youthspots.ui.PointAddFragment"
+        android:name="com.example.youthspots.ui.fragments.PointAddFragment"
         android:label="point_add_fragment"
         tools:layout="@layout/point_add_fragment" >
         <action

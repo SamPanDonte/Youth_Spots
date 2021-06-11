@@ -10,6 +10,7 @@ import com.example.youthspots.R
 import com.example.youthspots.data.Repository
 import com.example.youthspots.data.entity.Point
 import com.example.youthspots.utils.Event
+import com.example.youthspots.utils.NavigationInfo
 
 class PointAddViewModel : BaseViewModel() {
     var location: Location? = null
@@ -27,6 +28,6 @@ class PointAddViewModel : BaseViewModel() {
         }
 
         Repository.addPoint(Point(name.value!!, description.value!!, author, location!!.longitude, location!!.latitude, 0, pointTypes.value?.get(pointType!!)?.id!!))
-        navigateToFragment.value = Event(R.id.action_pointAddFragment_to_mapsFragment)
+        navigateToFragment.value = Event(NavigationInfo(R.id.action_pointAddFragment_to_mapsFragment))
     }
 }

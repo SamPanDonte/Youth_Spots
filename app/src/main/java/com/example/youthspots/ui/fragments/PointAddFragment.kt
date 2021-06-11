@@ -1,4 +1,4 @@
-package com.example.youthspots.ui
+package com.example.youthspots.ui.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -24,7 +24,7 @@ import com.example.youthspots.utils.PermissionUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
-class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class PointAddFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     private val mViewModel: PointAddViewModel by viewModels()
     private lateinit var locationProvider: FusedLocationProviderClient
@@ -82,14 +82,6 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
         locationProvider.lastLocation.addOnSuccessListener {
             mViewModel.location = it
         }
-    }
-
-    private fun observeModelNavigation(model : BaseViewModel) {
-        model.navigationEvent.observe(this.viewLifecycleOwner, {
-            it.getContent()?.let { action ->
-                findNavController().navigate(action)
-            }
-        })
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

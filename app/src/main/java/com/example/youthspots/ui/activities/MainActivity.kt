@@ -1,4 +1,4 @@
-package com.example.youthspots.ui
+package com.example.youthspots.ui.activities
 
 import android.content.Intent
 import android.os.Bundle

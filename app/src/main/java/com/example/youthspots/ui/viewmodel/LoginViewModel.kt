@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.youthspots.MainApplication
 import com.example.youthspots.data.Repository
 import com.example.youthspots.utils.Event
+import com.example.youthspots.utils.NavigationInfo
 
 class LoginViewModel : BaseViewModel() {
     val name : MutableLiveData<String> = MutableLiveData()
@@ -18,7 +19,7 @@ class LoginViewModel : BaseViewModel() {
         //Register todo
         Repository.saveInSharedPreferences(Repository.LOGIN_TAG, name.value!!)
         Repository.saveInSharedPreferences(Repository.API_KEY_TAG, "TestVal")
-        navigateToFragment.value = Event(0)
+        navigateToFragment.value = Event(NavigationInfo(0))
     }
 
     fun login() {
@@ -29,6 +30,6 @@ class LoginViewModel : BaseViewModel() {
         //Login todo
         Repository.saveInSharedPreferences(Repository.LOGIN_TAG, name.value!!)
         Repository.saveInSharedPreferences(Repository.API_KEY_TAG, "TestVal")
-        navigateToFragment.value = Event(0)
+        navigateToFragment.value = Event(NavigationInfo(0))
     }
 }
