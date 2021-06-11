@@ -21,7 +21,7 @@ class RankingViewModel(val adapter: UserAdapter, val lifecycleOwner: LifecycleOw
     fun setMyRank() {
         adapter.submitList(users.value)
         adapter.notifyDataSetChanged()
-        users.observe(lifecycleOwner) {
+        users.observe(lifecycleOwner) { // TODO
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         }
@@ -30,7 +30,7 @@ class RankingViewModel(val adapter: UserAdapter, val lifecycleOwner: LifecycleOw
     fun topRank() {
         adapter.submitList(usersTop.value)
         adapter.notifyDataSetChanged()
-        usersTop.observe(lifecycleOwner) {
+        usersTop.observe(lifecycleOwner) { // TODO
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         }
