@@ -4,19 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.youthspots.data.dao.*
 import com.example.youthspots.data.entity.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @Database(
     entities = [
         Point::class, PointComment::class, PointImage::class,
         PointRating::class, PointType::class, User::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class CacheDatabase : RoomDatabase() {

@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class PointType(
     val name: String,
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     val id: Long = 0
 )
