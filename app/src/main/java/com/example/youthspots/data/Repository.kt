@@ -47,5 +47,9 @@ object Repository {
 
     fun getImages(pointId: Long) = database.getPointImageDao().getImages(pointId)
 
-    fun addComment(pointComment: PointComment) = database.getPointCommentDao().insert(pointComment)
+    fun addComment(pointComment: PointComment) {
+        GlobalScope.async {
+            database.getPointCommentDao().insert(pointComment)
+        }
+    }
 }
