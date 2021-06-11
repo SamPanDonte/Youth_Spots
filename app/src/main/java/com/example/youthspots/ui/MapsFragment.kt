@@ -10,17 +10,22 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import com.example.youthspots.R
 import com.example.youthspots.data.Repository
+import com.example.youthspots.ui.viewmodel.SharedViewModel
 import com.example.youthspots.utils.PermissionUtils
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 class MapsFragment : Fragment(), OnMapReadyCallback {
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     lateinit var map : GoogleMap
     @SuppressLint("MissingPermission")
@@ -53,6 +58,17 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         )) {
             map.isMyLocationEnabled = true
         }
+        map.moveCamera(
+            CameraUpdateFactory.newCameraPosition(
+                CameraPosition(
+                    LatLng(sharedViewModel.cameraLatitude, sharedViewModel.cameraLongitude),
+                    sharedViewModel.cameraZoom,
+                    sharedViewModel.cameraTilt,
+                    sharedViewModel.cameraBearing,
+                )
+            )
+        )
+
         Repository.getPoints().asLiveData().observe(viewLifecycleOwner) {
             for (point in it) {
                 map.addMarker(MarkerOptions()

@@ -10,6 +10,11 @@ object Repository {
     private const val PREFERENCES_TAG = "YouthSpotsSP"
     const val LOGIN_TAG = "Login"
     const val API_KEY_TAG = "ApiKey"
+    const val CAMERA_LONG_TAG = "CameraLong"
+    const val CAMERA_LAT_TAG = "CameraLat"
+    const val CAMERA_ZOOM_TAG = "CameraZoom"
+    const val CAMERA_TILT_TAG = "CameraTilt"
+    const val CAMERA_BEARING_TAG = "CameraBearing"
     private val database = CacheDatabase.getInstance(MainApplication.context)
 
     fun getPoints() = database.getPointDao().getPoints()
@@ -22,9 +27,9 @@ object Repository {
         }
     }
 
-    fun getFromSharedPreferences(tag: String) : String {
+    fun getFromSharedPreferences(tag: String, default: String = "") : String {
         val sp = MainApplication.context.getSharedPreferences(PREFERENCES_TAG, Context.MODE_PRIVATE)
-        return sp.getString(tag, "")!!
+        return sp.getString(tag, default)!!
     }
 
     fun saveInSharedPreferences(tag: String, value: String) {
