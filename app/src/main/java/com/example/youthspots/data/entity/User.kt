@@ -10,4 +10,8 @@ data class User(
     val place: Int,
     @PrimaryKey(autoGenerate = false)
     val id: Long
-)
+) {
+    fun summary() : String {
+        return "$place. $name - $score"
+    }
+}

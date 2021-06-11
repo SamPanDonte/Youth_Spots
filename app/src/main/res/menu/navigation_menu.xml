@@ -9,4 +9,7 @@
     <item android:id="@+id/settingsFragment"
         android:title="@string/settings"
         android:menuCategory="secondary" />
+    <item android:id="@+id/rankingFragment"
+        android:title="@string/ranking"
+        android:menuCategory="secondary" />
 </menu>

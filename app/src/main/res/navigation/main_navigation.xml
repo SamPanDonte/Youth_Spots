@@ -66,4 +66,8 @@
             app:argType="long"
             android:defaultValue="0L" />
     </fragment>
+    <fragment
+        android:id="@+id/rankingFragment"
+        android:name="com.example.youthspots.ui.fragment.RankingFragment"
+        android:label="RankingFragment" />
 </navigation>

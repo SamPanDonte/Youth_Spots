@@ -52,4 +52,8 @@ object Repository {
             database.getPointCommentDao().insert(pointComment)
         }
     }
+
+    fun getTopUsers() = database.getUserDao().getTopUsers()
+
+    fun getMyRanking() = database.getUserDao().getMyRanking()
 }

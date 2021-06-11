@@ -35,4 +35,7 @@
     <string name="add_comment">Add comment</string>
     <string name="comment_autofill">Write comment...</string>
     <string name="add_image">Add image</string>
+    <string name="my_position">My position</string>
+    <string name="top_users">Top users</string>
+    <string name="ranking">Ranking</string>
 </resources>
