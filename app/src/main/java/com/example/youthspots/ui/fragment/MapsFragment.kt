@@ -107,7 +107,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     private fun observeModelNavigation(model : BaseViewModel) {
         model.navigationEvent.observe(this.viewLifecycleOwner, {
-            if (interstitialAd == null) {
+            if (interstitialAd == null || sharedViewModel.adCounter != 0) {
                 navigate(it)
             } else {
                 interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {

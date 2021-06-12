@@ -18,6 +18,8 @@ class SharedViewModel : BaseViewModel(), GoogleMap.OnMarkerClickListener {
     var markers: ArrayList<Pair<Point, Marker>> = arrayListOf()
 
     var adsLoaded = false
+    var adCounter: Int = Repository.getFromSharedPreferences(Repository.AD_COUNTER_TAG, "3").toInt()
+        private set
 
     fun save() {
         Repository.saveInSharedPreferences(Repository.CAMERA_LONG_TAG, cameraLongitude.toString())
@@ -25,10 +27,16 @@ class SharedViewModel : BaseViewModel(), GoogleMap.OnMarkerClickListener {
         Repository.saveInSharedPreferences(Repository.CAMERA_ZOOM_TAG, cameraZoom.toString())
         Repository.saveInSharedPreferences(Repository.CAMERA_TILT_TAG, cameraTilt.toString())
         Repository.saveInSharedPreferences(Repository.CAMERA_BEARING_TAG, cameraBearing.toString())
+        Repository.saveInSharedPreferences(Repository.AD_COUNTER_TAG, adCounter.toString())
     }
 
     override fun onMarkerClick(p0: Marker): Boolean {
         markers.find { it.second == p0 }?.let {
+            adCounter = if (adCounter == 0) {
+                3
+            } else {
+                adCounter - 1
+            }
             navigateToFragment.value = Event(NavigationInfo(
                 R.id.action_mapsFragment_to_pointDetailsFragment,
                 arrayListOf(Pair("pointId", it.first.id))

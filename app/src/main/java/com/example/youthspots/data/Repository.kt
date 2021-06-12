@@ -17,6 +17,8 @@ object Repository {
     const val CAMERA_ZOOM_TAG = "CameraZoom"
     const val CAMERA_TILT_TAG = "CameraTilt"
     const val CAMERA_BEARING_TAG = "CameraBearing"
+    const val AD_COUNTER_TAG = "AdCounter"
+
     private val database = CacheDatabase.getInstance(MainApplication.context)
 
     fun getPoints() = database.getPointDao().getPoints()

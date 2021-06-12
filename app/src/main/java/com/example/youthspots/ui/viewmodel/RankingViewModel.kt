@@ -1,6 +1,10 @@
 package com.example.youthspots.ui.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.ViewModel
 import com.example.youthspots.data.Repository
 import com.example.youthspots.data.entity.User
 import com.example.youthspots.ui.adapter.UserAdapter
@@ -21,8 +25,9 @@ class RankingViewModel(val adapter: UserAdapter, val lifecycleOwner: LifecycleOw
     fun setMyRank() {
         adapter.submitList(users.value)
         adapter.notifyDataSetChanged()
-        users.observe(lifecycleOwner) { // TODO
-            adapter.submitList(it)
+        users.removeObservers(lifecycleOwner)
+        users.observe(lifecycleOwner) {
+            adapter.submitList(it.reversed())
             adapter.notifyDataSetChanged()
         }
     }
@@ -30,7 +35,8 @@ class RankingViewModel(val adapter: UserAdapter, val lifecycleOwner: LifecycleOw
     fun topRank() {
         adapter.submitList(usersTop.value)
         adapter.notifyDataSetChanged()
-        usersTop.observe(lifecycleOwner) { // TODO
+        usersTop.removeObservers(lifecycleOwner)
+        usersTop.observe(lifecycleOwner) {
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         }
