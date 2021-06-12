@@ -15,6 +15,7 @@ import com.example.youthspots.ui.activity.MainActivity
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
+import com.google.android.gms.location.LocationServices
 
 class GeofenceReceiver : BroadcastReceiver() {
 
@@ -30,8 +31,9 @@ class GeofenceReceiver : BroadcastReceiver() {
 
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
             geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-
+            val geofencingClient = LocationServices.getGeofencingClient(context)
             val triggeringGeofences = geofencingEvent.triggeringGeofences
+            geofencingClient.removeGeofences(triggeringGeofences.map { it.requestId })
 
             createChannel(context)
             if (triggeringGeofences.size == 1) {

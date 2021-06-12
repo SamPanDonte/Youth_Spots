@@ -75,6 +75,7 @@ class PointDetailsFragment : BaseFragment() {
             Intent(this.requireActivity(), GeofenceReceiver::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
+        geofencingClient.removeGeofences(arrayListOf(mViewModel.point.value!!.id.toString()))
         geofencingClient.addGeofences(mViewModel.getGeofencingRequest(), pendingIntent).run {
             addOnSuccessListener {
                 Toast.makeText(this@PointDetailsFragment.requireContext(), "Geofence added!", Toast.LENGTH_LONG).show()
