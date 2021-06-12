@@ -67,7 +67,8 @@ class PointDetailsFragment : BaseFragment() {
                     R.string.permission_rationale_location,
                     permissionResult,
                     null,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
             )) {
                 addGeofence()
             }
