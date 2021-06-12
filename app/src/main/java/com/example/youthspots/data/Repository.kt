@@ -66,7 +66,11 @@ object Repository {
         getFromSharedPreferences(LOGIN_TAG)
     )
 
-    fun ratePoint(pointRating: PointRating) = database.getPointRatingDao().insert(pointRating)
+    fun ratePoint(pointRating: PointRating) {
+        GlobalScope.async {
+            database.getPointRatingDao().insert(pointRating)
+        }
+    }
 
     fun addPicture(pointId: Long, imageBitmap: Bitmap) {
         imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, MainApplication.context.openFileOutput("test", Context.MODE_PRIVATE))
