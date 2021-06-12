@@ -34,5 +34,8 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         viewModel.save()
+        if (!Repository.autoLogin()) {
+            Repository.logOut()
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.youthspots.data
 
 import android.content.Context
 import android.graphics.Bitmap
+import androidx.preference.PreferenceManager
 import com.example.youthspots.MainApplication
 import com.example.youthspots.data.entity.Point
 import com.example.youthspots.data.entity.PointComment
@@ -74,5 +75,16 @@ object Repository {
 
     fun addPicture(pointId: Long, imageBitmap: Bitmap) {
         imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, MainApplication.context.openFileOutput("test", Context.MODE_PRIVATE))
+    }
+
+    fun autoLogin() = PreferenceManager.getDefaultSharedPreferences(MainApplication.context).getBoolean("autologin", true)
+
+    fun syncTime() = PreferenceManager.getDefaultSharedPreferences(MainApplication.context).getString("sync_time", "1h")!![0].code
+
+    fun logOut() {
+        val editor = MainApplication.context.getSharedPreferences(PREFERENCES_TAG, Context.MODE_PRIVATE).edit()
+        editor.remove(LOGIN_TAG)
+        editor.remove(API_KEY_TAG)
+        editor.apply()
     }
 }

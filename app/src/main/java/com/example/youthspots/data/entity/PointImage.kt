@@ -1,8 +1,6 @@
 package com.example.youthspots.data.entity
 
-import android.content.Context
 import android.graphics.BitmapFactory
-import android.media.Image
 import android.widget.ImageView
 import androidx.room.Entity
 import androidx.room.ForeignKey

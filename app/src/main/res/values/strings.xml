@@ -41,4 +41,5 @@
     <string name="notify_when_close">Notify when close</string>
     <string name="like">Like</string>
     <string name="dislike">Dislike</string>
+    <string name="autologin">Enable autologin</string>
 </resources>
