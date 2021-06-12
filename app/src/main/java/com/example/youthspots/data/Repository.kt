@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 import com.example.youthspots.MainApplication
 import com.example.youthspots.data.entity.Point
 import com.example.youthspots.data.entity.PointComment
+import com.example.youthspots.data.entity.PointImage
 import com.example.youthspots.data.entity.PointRating
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -75,6 +76,9 @@ object Repository {
 
     fun addPicture(pointId: Long, imageBitmap: Bitmap) {
         imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, MainApplication.context.openFileOutput("test", Context.MODE_PRIVATE))
+        GlobalScope.async {
+            database.getPointImageDao().insert(PointImage("test", pointId))
+        }
     }
 
     fun autoLogin() = PreferenceManager.getDefaultSharedPreferences(MainApplication.context).getBoolean("autologin", true)
