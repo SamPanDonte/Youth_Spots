@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
+import com.example.youthspots.R
 import com.example.youthspots.ui.activity.MainActivity
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
@@ -47,6 +48,7 @@ class GeofenceReceiver : BroadcastReceiver() {
             .setContentTitle("Entered point of interest!")
             .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setSmallIcon(R.drawable.ic_launcher_background)
             .setContentIntent(
                 PendingIntent.getActivity(
                     context,

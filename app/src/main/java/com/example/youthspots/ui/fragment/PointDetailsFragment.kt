@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -29,8 +30,18 @@ class PointDetailsFragment : BaseFragment() {
     private val args: PointDetailsFragmentArgs by navArgs()
     private lateinit var binding: FragmentPointDetailsBinding
     private lateinit var geofencingClient: GeofencingClient
+    private lateinit var permissionResult: ActivityResultLauncher<Array<String>>
     private val mViewModel: PointDetailsViewModel by viewModels {
         PointDetailsViewModel.provideFactory(args.pointId)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        permissionResult = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                addGeofence()
+            }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -54,11 +65,7 @@ class PointDetailsFragment : BaseFragment() {
             if (PermissionUtils.checkAndRequestPermissions(
                     this.requireActivity() as AppCompatActivity,
                     R.string.permission_rationale_location,
-                    registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-                        if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-                            addGeofence()
-                        }
-                    },
+                    permissionResult,
                     null,
                     Manifest.permission.ACCESS_FINE_LOCATION
             )) {
