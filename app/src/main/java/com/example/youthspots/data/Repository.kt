@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.youthspots.MainApplication
 import com.example.youthspots.data.entity.Point
 import com.example.youthspots.data.entity.PointComment
+import com.example.youthspots.data.entity.PointRating
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 
@@ -56,4 +57,11 @@ object Repository {
     fun getTopUsers() = database.getUserDao().getTopUsers()
 
     fun getMyRanking() = database.getUserDao().getMyRanking()
+
+    fun getMyPointRating(pointId: Long) = database.getPointRatingDao().getRating(
+        pointId,
+        getFromSharedPreferences(LOGIN_TAG)
+    )
+
+    fun ratePoint(pointRating: PointRating) = database.getPointRatingDao().insert(pointRating)
 }

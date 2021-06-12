@@ -15,4 +15,7 @@ abstract class PointRatingDao : BaseDao<PointRating> {
 
     @Query("SELECT COUNT(id) FROM PointRating WHERE point = :pointId AND NOT rating")
     abstract fun getDislikes(pointId: Long) : Flow<Int>
+
+    @Query("SELECT * FROM PointRating WHERE point = :pointId AND author = :author LIMIT 1")
+    abstract fun getRating(pointId: Long, author: String): Flow<PointRating>
 }

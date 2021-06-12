@@ -39,4 +39,6 @@
     <string name="top_users">Top users</string>
     <string name="ranking">Ranking</string>
     <string name="notify_when_close">Notify when close</string>
+    <string name="like">Like</string>
+    <string name="dislike">Dislike</string>
 </resources>

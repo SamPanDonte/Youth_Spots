@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.example.youthspots.R
 import com.example.youthspots.data.Repository
 import com.example.youthspots.data.entity.Point
+import com.example.youthspots.data.entity.PointRating
 import com.example.youthspots.utils.Event
 import com.example.youthspots.utils.NavigationInfo
 import com.google.android.gms.location.Geofence
@@ -24,6 +25,7 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
 
 
     val point: LiveData<Point> = Repository.getPoint(pointId).asLiveData()
+    val rating: LiveData<PointRating> = Repository.getMyPointRating(pointId).asLiveData()
 
     fun viewImages() {
         navigateToFragment.value = Event(NavigationInfo(
@@ -53,5 +55,15 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
 
     fun addGeofence() {
         mGeofenceEvent.value = Event(null)
+    }
+
+    fun ratePoint(type: Boolean) {
+        if (rating.value == null) {
+            Repository.ratePoint(PointRating(
+                type,
+                Repository.getFromSharedPreferences(Repository.LOGIN_TAG),
+                pointId
+            ))
+        }
     }
 }
