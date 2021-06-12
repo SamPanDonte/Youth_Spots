@@ -66,4 +66,8 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
             ))
         }
     }
+
+    fun reportPoint() {
+        // TODO
+    }
 }

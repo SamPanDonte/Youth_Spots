@@ -42,4 +42,5 @@
     <string name="like">Like</string>
     <string name="dislike">Dislike</string>
     <string name="autologin">Enable autologin</string>
+    <string name="report_point_as_inappropriate">Report point as inappropriate</string>
 </resources>
