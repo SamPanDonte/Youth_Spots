@@ -19,7 +19,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_point">Add point</string>
-    <string name="permission_rationale_location">Application wants to use your location to show it on map</string>
+    <string name="permission_rationale_location">Application wants to use your location to notify you when you are close to point</string>
     <string name="permission_rationale_add_point">Application needs your location to add place where you are to map.</string>
     <string name="add_point_failure">Without location you can\'t add points.</string>
     <string name="name">Name</string>
@@ -38,4 +38,5 @@
     <string name="my_position">My position</string>
     <string name="top_users">Top users</string>
     <string name="ranking">Ranking</string>
+    <string name="notify_when_close">Notify when close</string>
 </resources>
