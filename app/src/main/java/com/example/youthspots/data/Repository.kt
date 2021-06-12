@@ -65,5 +65,9 @@ object Repository {
         getFromSharedPreferences(LOGIN_TAG)
     )
 
-    fun ratePoint(pointRating: PointRating) = database.getPointRatingDao().insert(pointRating)
+    fun ratePoint(pointRating: PointRating) {
+        GlobalScope.async {
+            database.getPointRatingDao().insert(pointRating)
+        }
+    }
 }
