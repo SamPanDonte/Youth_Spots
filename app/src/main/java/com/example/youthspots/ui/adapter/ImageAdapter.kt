@@ -34,6 +34,7 @@ class ImageAdapter : ListAdapter<PointImage, ImageAdapter.ImageViewHolder>(Image
         fun bind(image: PointImage) {
             binding.image = image
             binding.executePendingBindings()
+            image.setImage(binding.imageView)
         }
     }
 }

@@ -1,11 +1,9 @@
 package com.example.youthspots.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.example.youthspots.data.Repository
 import com.example.youthspots.data.entity.PointImage
+import com.example.youthspots.utils.Event
 
 class ImageViewModel(private val pointId: Long) : ViewModel() {
     companion object {
@@ -16,10 +14,13 @@ class ImageViewModel(private val pointId: Long) : ViewModel() {
             }
         }
     }
+    private val imagePick = MutableLiveData<Event<Any?>>()
+    val imagePickEvent: LiveData<Event<Any?>>
+        get() = imagePick
 
     val images: LiveData<List<PointImage>> = Repository.getImages(pointId).asLiveData()
 
     fun addImage() {
-        // TODO
+        imagePick.value = Event(null)
     }
 }

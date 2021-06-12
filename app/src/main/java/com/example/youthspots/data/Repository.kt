@@ -1,6 +1,7 @@
 package com.example.youthspots.data
 
 import android.content.Context
+import android.graphics.Bitmap
 import com.example.youthspots.MainApplication
 import com.example.youthspots.data.entity.Point
 import com.example.youthspots.data.entity.PointComment
@@ -66,4 +67,8 @@ object Repository {
     )
 
     fun ratePoint(pointRating: PointRating) = database.getPointRatingDao().insert(pointRating)
+
+    fun addPicture(pointId: Long, imageBitmap: Bitmap) {
+        imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, MainApplication.context.openFileOutput("test", Context.MODE_PRIVATE))
+    }
 }

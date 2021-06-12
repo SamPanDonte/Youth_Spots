@@ -1,10 +1,13 @@
 package com.example.youthspots.data.entity
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.media.Image
+import android.widget.ImageView
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.example.youthspots.MainApplication
 
 @Entity(
     foreignKeys = [
@@ -22,11 +25,8 @@ data class PointImage(
     @PrimaryKey(autoGenerate = false)
     val id: Long = 0
 ) {
-    fun getImage(context: Context): Image? {
-        context.openFileInput(image).use {
-            it // TODO
-        }
-        return null
+    fun setImage(view: ImageView) {
+        view.setImageBitmap(BitmapFactory.decodeStream(MainApplication.context.openFileInput(image)))
     }
 
     override fun equals(other: Any?): Boolean {
