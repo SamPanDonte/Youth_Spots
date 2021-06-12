@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,24 +14,46 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.youthspots.R
 import com.example.youthspots.databinding.PointAddFragmentBinding
+import com.example.youthspots.ui.viewmodel.BaseViewModel
 import com.example.youthspots.ui.viewmodel.PointAddViewModel
+import com.example.youthspots.utils.Event
+import com.example.youthspots.utils.NavigationInfo
 import com.example.youthspots.utils.PermissionUtils
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
-class PointAddFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
+class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private val mViewModel: PointAddViewModel by viewModels()
+    private var interstitialAd: InterstitialAd? = null
     private lateinit var locationProvider: FusedLocationProviderClient
     private lateinit var mBinding: PointAddFragmentBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(
             inflater, R.layout.point_add_fragment, container, false
+        )
+        val adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(
+            this.requireContext(),
+            "ca-app-pub-3940256099942544/1033173712",
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdLoaded(p0: InterstitialAd) {
+                    interstitialAd = p0
+                }
+            }
         )
         return mBinding.root
     }
@@ -88,5 +111,34 @@ class PointAddFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         mViewModel.pointType = null
+    }
+
+    private fun observeModelNavigation(model : BaseViewModel) {
+        model.navigationEvent.observe(this.viewLifecycleOwner, {
+            if (interstitialAd == null) {
+                navigate(it)
+            } else {
+                interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        navigate(it)
+                    }
+
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                        navigate(it)
+                    }
+
+                    override fun onAdShowedFullScreenContent() {
+                        interstitialAd = null
+                    }
+                }
+                interstitialAd?.show(requireActivity())
+            }
+        })
+    }
+
+    private fun navigate(event: Event<NavigationInfo>) {
+        event.getContent()?.let { info ->
+            findNavController().navigate(info.action, info.getBundledParameters())
+        }
     }
 }

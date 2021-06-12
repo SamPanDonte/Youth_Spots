@@ -10,6 +10,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.youthspots.R
 import com.example.youthspots.data.Repository
 import com.example.youthspots.ui.viewmodel.SharedViewModel
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +24,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<BottomNavigationView>(R.id.bottomNavigationView).setupWithNavController(navController) // TODO
         if (!Repository.userLoggedIn()) {
             startActivity(Intent(this, LoginActivity::class.java))
+        } else {
+            MobileAds.initialize(this) {
+                viewModel.adsLoaded = true
+            }
         }
     }
 

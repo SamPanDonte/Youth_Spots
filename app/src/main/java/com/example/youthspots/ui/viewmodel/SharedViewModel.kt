@@ -17,6 +17,8 @@ class SharedViewModel : BaseViewModel(), GoogleMap.OnMarkerClickListener {
 
     var markers: ArrayList<Pair<Point, Marker>> = arrayListOf()
 
+    var adsLoaded = false
+
     fun save() {
         Repository.saveInSharedPreferences(Repository.CAMERA_LONG_TAG, cameraLongitude.toString())
         Repository.saveInSharedPreferences(Repository.CAMERA_LAT_TAG, cameraLatitude.toString())

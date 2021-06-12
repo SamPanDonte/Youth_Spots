@@ -19,9 +19,7 @@
         android:theme="@style/Theme.YouthSpots" >
         <receiver
             android:name=".receiver.GeofenceReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="TODO">
+            android:enabled="true">
         </receiver>
 
         <activity android:name=".ui.activity.LoginActivity" />
@@ -32,6 +30,9 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
 
         <uses-library
             android:name="org.apache.http.legacy"
