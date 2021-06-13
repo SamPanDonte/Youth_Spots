@@ -9,4 +9,7 @@ import kotlinx.coroutines.flow.Flow
 abstract class PointImageDao : BaseDao<PointImage> {
     @Query("SELECT * FROM PointImage WHERE point = :pointId")
     abstract fun getImages(pointId: Long) : Flow<List<PointImage>>
+
+    @Query("DELETE FROM PointImage")
+    abstract fun clearPointImageCache()
 }

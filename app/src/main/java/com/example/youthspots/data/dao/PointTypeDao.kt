@@ -9,4 +9,7 @@ import kotlinx.coroutines.flow.Flow
 abstract class PointTypeDao : BaseDao<PointType> {
     @Query("SELECT * FROM PointType")
     abstract fun getPointTypes() : Flow<List<PointType>>
+
+    @Query("DELETE FROM PointType")
+    abstract fun clearPointTypeCache()
 }

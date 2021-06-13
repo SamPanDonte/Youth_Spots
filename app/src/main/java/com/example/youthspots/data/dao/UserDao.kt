@@ -12,4 +12,7 @@ abstract class UserDao : BaseDao<User> {
 
     @Query("SELECT * FROM User ORDER BY place DESC LIMIT 50")
     abstract fun getMyRanking() : Flow<List<User>>
+
+    @Query("DELETE FROM User")
+    abstract fun clearUserCache()
 }

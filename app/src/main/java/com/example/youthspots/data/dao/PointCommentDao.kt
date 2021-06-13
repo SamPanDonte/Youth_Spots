@@ -9,4 +9,7 @@ import kotlinx.coroutines.flow.Flow
 abstract class PointCommentDao : BaseDao<PointComment> {
     @Query("SELECT * FROM PointComment WHERE point = :pointId")
     abstract fun getComments(pointId: Long): Flow<List<PointComment>>
+
+    @Query("DELETE FROM PointComment")
+    abstract fun clearPointCommentCache()
 }

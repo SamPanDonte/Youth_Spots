@@ -12,4 +12,7 @@ abstract class PointDao : BaseDao<Point> {
 
     @Query("SELECT * FROM Point WHERE id = :id")
     abstract fun getPoint(id: Long) : Flow<Point>
+
+    @Query("DELETE FROM Point")
+    abstract fun clearPointCache()
 }

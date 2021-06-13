@@ -23,6 +23,15 @@ abstract class CacheDatabase : RoomDatabase() {
     abstract fun getPointTypeDao() : PointTypeDao
     abstract fun getUserDao() : UserDao
 
+    fun clearCache() {
+        getPointImageDao().clearPointImageCache()
+        getPointRatingDao().clearPointRatingCache()
+        getPointCommentDao().clearPointCommentCache()
+        getPointDao().clearPointCache()
+        getUserDao().clearUserCache()
+        getPointTypeDao().clearPointTypeCache()
+    }
+
     companion object {
         @Volatile
         private var instance: CacheDatabase? = null
