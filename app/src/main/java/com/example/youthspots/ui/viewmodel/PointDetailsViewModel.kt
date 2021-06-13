@@ -1,14 +1,20 @@
 package com.example.youthspots.ui.viewmodel
 
+import android.provider.Settings
+import android.widget.Toast
 import androidx.lifecycle.*
+import com.example.youthspots.MainApplication
 import com.example.youthspots.R
 import com.example.youthspots.data.Repository
+import com.example.youthspots.data.Service
 import com.example.youthspots.data.entity.Point
 import com.example.youthspots.data.entity.PointRating
 import com.example.youthspots.utils.Event
 import com.example.youthspots.utils.NavigationInfo
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
 class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
     companion object {
@@ -68,6 +74,9 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
     }
 
     fun reportPoint() {
-        // TODO
+        GlobalScope.async {
+            Service.service.report("Token " + Repository.getFromSharedPreferences(Repository.API_KEY_TAG), pointId).execute()
+        }
+        Toast.makeText(MainApplication.context, "point reported!", Toast.LENGTH_LONG).show()
     }
 }

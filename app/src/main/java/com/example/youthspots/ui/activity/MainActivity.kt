@@ -19,15 +19,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        navController = findNavController(R.id.nav_host_fragment_container)
-        findViewById<BottomNavigationView>(R.id.bottomNavigationView).setupWithNavController(navController) // TODO
         if (!Repository.userLoggedIn()) {
             startActivity(Intent(this, LoginActivity::class.java))
         } else {
             MobileAds.initialize(this) {
                 viewModel.adsLoaded = true
             }
+            setContentView(R.layout.activity_main)
+            navController = findNavController(R.id.nav_host_fragment_container)
+            findViewById<BottomNavigationView>(R.id.bottomNavigationView).setupWithNavController(navController) // TODO
         }
     }
 

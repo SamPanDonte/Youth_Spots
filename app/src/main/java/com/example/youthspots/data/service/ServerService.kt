@@ -8,6 +8,26 @@ import retrofit2.http.*
 
 interface ServerService {
 
+    @FormUrlEncoded
+    @POST("login")
+    fun login(
+        @Field("username") login: String,
+        @Field("password") password: String
+    ) : Call<Token>
+
+    @POST("report/{id}")
+    fun report(
+        @Header("Authorization") credentials: String,
+        @Path("id") id: Long
+    ) : Call<String>
+
+    @FormUrlEncoded
+    @POST("register")
+    fun register(
+        @Field("username") login: String,
+        @Field("password") password: String
+    ) : Call<Token>
+
     @GET("point")
     fun getPoints(
         @Query("longitude") longitude: Double,

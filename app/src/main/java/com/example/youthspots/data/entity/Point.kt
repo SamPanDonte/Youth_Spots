@@ -20,7 +20,7 @@ data class Point(
     val author: String,
     val longitude: Double,
     val latitude: Double,
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     val id: Long = 0,
     val type: Long = 0
 )

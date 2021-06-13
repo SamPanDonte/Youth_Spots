@@ -5,11 +5,10 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.preference.PreferenceManager
 import com.example.youthspots.MainApplication
-import com.example.youthspots.data.entity.Point
-import com.example.youthspots.data.entity.PointComment
-import com.example.youthspots.data.entity.PointRating
+import com.example.youthspots.data.entity.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
@@ -31,7 +30,7 @@ object Repository {
     private val serverService = Service.service
 
     private fun syncWithServer() {
-        if (getFromSharedPreferences(LAST_SYNC_TAG, "1").toLong() + syncTime() * 3600L > Calendar.getInstance().timeInMillis) {
+        if (getFromSharedPreferences(LAST_SYNC_TAG, "1").toLong() + syncTime() * 3600L * 1000 > Calendar.getInstance().timeInMillis) {
             return
         }
         Log.d("SYNC", "SYNC DOING")
@@ -43,6 +42,8 @@ object Repository {
                 for (type in types.body()!!) {
                     database.getPointTypeDao().insert(type)
                 }
+            } else {
+                Log.d("SYNC", "type failed")
             }
             val response = serverService.getPoints(0.0, 0.0).execute()
             if (response.isSuccessful) {
@@ -55,6 +56,8 @@ object Repository {
                         for (comment in comments.body()!!) {
                             database.getPointCommentDao().insert(comment)
                         }
+                    } else {
+                        Log.d("SYNC", "comment failed")
                     }
                     val ratings = serverService.getRating(point.id).execute()
                     if (ratings.isSuccessful) {
@@ -62,6 +65,8 @@ object Repository {
                         for (rating in ratings.body()!!) {
                             database.getPointRatingDao().insert(rating)
                         }
+                    } else {
+                        Log.d("SYNC", "rating failed")
                     }
                     val images = serverService.getImages(point.id).execute()
                     if (images.isSuccessful) {
@@ -69,30 +74,34 @@ object Repository {
                         for (image in images.body()!!) {
                             database.getPointImageDao().insert(image)
                         }
+                    } else {
+                        Log.d("SYNC", "images failed")
                     }
                 }
+            } else {
+                Log.d("SYNC", "point failed")
             }
         }
     }
 
-    fun getPoints() {
+    fun getPoints() : Flow<List<Point>> {
         syncWithServer()
-        database.getPointDao().getPoints()
+        return database.getPointDao().getPoints()
     }
 
-    fun getPoint(id: Long) {
+    fun getPoint(id: Long) : Flow<Point> {
         syncWithServer()
-        database.getPointDao().getPoint(id)
+        return database.getPointDao().getPoint(id)
     }
 
-    fun getPointTypes() {
+    fun getPointTypes() : Flow<List<PointType>> {
         syncWithServer()
-        database.getPointTypeDao().getPointTypes()
+        return database.getPointTypeDao().getPointTypes()
     }
 
     fun addPoint(point: Point) {
         GlobalScope.async {
-            val result = serverService.addPoint(getFromSharedPreferences(API_KEY_TAG), point).execute()
+            val result = serverService.addPoint("Token " + getFromSharedPreferences(API_KEY_TAG), point).execute()
             if (result.isSuccessful) {
                 database.getPointDao().insert(result.body()!!)
             }
@@ -112,33 +121,33 @@ object Repository {
 
     fun userLoggedIn() = MainApplication.context.getSharedPreferences(PREFERENCES_TAG, Context.MODE_PRIVATE).contains(LOGIN_TAG)
 
-    fun getComments(pointId: Long) {
+    fun getComments(pointId: Long) : Flow<List<PointComment>> {
         syncWithServer()
-        database.getPointCommentDao().getComments(pointId)
+        return database.getPointCommentDao().getComments(pointId)
     }
 
-    fun getImages(pointId: Long) {
+    fun getImages(pointId: Long) : Flow<List<PointImage>> {
         syncWithServer()
-        database.getPointImageDao().getImages(pointId)
+        return database.getPointImageDao().getImages(pointId)
     }
 
     fun addComment(pointComment: PointComment) {
         GlobalScope.async {
-            val result = serverService.addComment(getFromSharedPreferences(API_KEY_TAG), pointComment).execute()
+            val result = serverService.addComment("Token " + getFromSharedPreferences(API_KEY_TAG), pointComment).execute()
             if (result.isSuccessful) {
                 database.getPointCommentDao().insert(result.body()!!)
             }
         }
     }
 
-    fun getTopUsers() {
+    fun getTopUsers() : Flow<List<User>> {
         syncWithServer()
-        database.getUserDao().getTopUsers()
+        return database.getUserDao().getTopUsers()
     }
 
-    fun getMyRanking() {
+    fun getMyRanking() : Flow<List<User>> {
         syncWithServer()
-        database.getUserDao().getMyRanking()
+        return database.getUserDao().getMyRanking()
     }
 
     fun getMyPointRating(pointId: Long) = database.getPointRatingDao().getRating(
@@ -148,7 +157,7 @@ object Repository {
 
     fun ratePoint(pointRating: PointRating) {
         GlobalScope.async {
-            val result = serverService.addRating(getFromSharedPreferences(API_KEY_TAG), pointRating).execute()
+            val result = serverService.addRating("Token " + getFromSharedPreferences(API_KEY_TAG), pointRating).execute()
             if (result.isSuccessful) {
                 database.getPointRatingDao().insert(result.body()!!)
             }
@@ -161,7 +170,7 @@ object Repository {
         imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         GlobalScope.async {
             val result = serverService.addImage(
-                getFromSharedPreferences(API_KEY_TAG),
+                "Token " + getFromSharedPreferences(API_KEY_TAG),
                 pointId,
                 RequestBody.create(MediaType.parse("image/png"), stream.toByteArray())
             ).execute()
