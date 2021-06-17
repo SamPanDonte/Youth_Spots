@@ -20,62 +20,68 @@ import com.google.android.gms.location.LocationServices
 
 class GeofenceReceiver : BroadcastReceiver() {
 
+    companion object {
+        private const val CHANNEL_ID = "GeofenceNotification"
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
         if (geofencingEvent.hasError()) {
-            val errorMessage = GeofenceStatusCodes
-                .getStatusCodeString(geofencingEvent.errorCode)
-            Log.e("TAG", errorMessage)
+            Log.e(
+                "Geofence Error: ",
+                GeofenceStatusCodes.getStatusCodeString(geofencingEvent.errorCode)
+            )
             return
         }
-        val geofenceTransition = geofencingEvent.geofenceTransition
-
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-            geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-            val geofencingClient = LocationServices.getGeofencingClient(context)
-            val triggeringGeofences = geofencingEvent.triggeringGeofences
-            geofencingClient.removeGeofences(triggeringGeofences.map { it.requestId })
-
-            createChannel(context)
-            if (triggeringGeofences.size == 1) {
-                sendNotification(context, "You entered chosen point of interest!")
-            } else {
-                sendNotification(context, "You entered chosen points of interest!")
-            }
+        when (geofencingEvent.geofenceTransition) {
+            Geofence.GEOFENCE_TRANSITION_ENTER -> enterGeofence(geofencingEvent.triggeringGeofences, context)
+            Geofence.GEOFENCE_TRANSITION_EXIT -> exitGeofence(geofencingEvent.triggeringGeofences, context)
         }
     }
 
-    fun sendNotification(context: Context, text: String) {
-        val builder = NotificationCompat.Builder(context, "GeofenceNotification")
-            .setContentTitle("Entered point of interest!")
+    private fun enterGeofence(geofence: List<Geofence>, context: Context) {
+        removeGeofence(geofence, context)
+        if (geofence.size == 1) {
+            sendNotification(context, context.getString(R.string.entered_one))
+        } else {
+            sendNotification(context, context.getString(R.string.entered_many))
+        }
+    }
+
+    private fun exitGeofence(geofence: List<Geofence>, context: Context) {
+        removeGeofence(geofence, context)
+        if (geofence.size == 1) {
+            sendNotification(context, context.getString(R.string.exited_one))
+        } else {
+            sendNotification(context, context.getString(R.string.exited_many))
+        }
+    }
+
+    private fun removeGeofence(geofenceList: List<Geofence>, ctx: Context) {
+        LocationServices.getGeofencingClient(ctx).removeGeofences(geofenceList.map { it.requestId })
+    }
+
+    private fun createChannel(ctx: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                ctx.getString(R.string.channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply { description = ctx.getString(R.string.channel_description) }
+            getSystemService(ctx, NotificationManager::class.java)?.createNotificationChannel(channel)
+        }
+    }
+
+    private fun sendNotification(ctx: Context, text: String) {
+        createChannel(ctx)
+        val notification = NotificationCompat.Builder(ctx, CHANNEL_ID)
+            .setContentTitle(ctx.getString(R.string.notifiaction_title))
             .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    context,
-                    0,
-                    Intent(context, MainActivity::class.java),
-                    0
-                )
-            )
-        with(NotificationManagerCompat.from(context)) {
-            notify(1, builder.build())
-        }
-    }
-
-    private fun createChannel(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "GeofenceNotification"
-            val descriptionText = "GeofenceNotification" // TODO
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("GeofenceNotification", name, importance).apply {
-                description = descriptionText
-            }
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                getSystemService(context, NotificationManager::class.java)!!
-            notificationManager.createNotificationChannel(channel)
-        }
+            .setSmallIcon(R.drawable.ic_launcher_background) // TODO
+            .setContentIntent(PendingIntent.getActivity(
+                    ctx, 0, Intent(ctx, MainActivity::class.java), 0
+            )).build()
+        NotificationManagerCompat.from(ctx).notify(0, notification)
     }
 }

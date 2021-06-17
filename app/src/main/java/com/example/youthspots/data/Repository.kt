@@ -3,19 +3,24 @@ package com.example.youthspots.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import android.widget.Toast
 import androidx.preference.PreferenceManager
 import com.example.youthspots.MainApplication
+import com.example.youthspots.R
 import com.example.youthspots.data.entity.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
 import java.util.*
 
+@Suppress("BlockingMethodInNonBlockingContext")
 object Repository {
     private const val PREFERENCES_TAG = "YouthSpotsSP"
+    private const val LAST_SYNC_TAG = "LastSync"
     const val LOGIN_TAG = "Login"
     const val API_KEY_TAG = "ApiKey"
     const val CAMERA_LONG_TAG = "CameraLong"
@@ -24,168 +29,219 @@ object Repository {
     const val CAMERA_TILT_TAG = "CameraTilt"
     const val CAMERA_BEARING_TAG = "CameraBearing"
     const val AD_COUNTER_TAG = "AdCounter"
-    private const val LAST_SYNC_TAG = "LastSync"
 
     private val database = CacheDatabase.getInstance(MainApplication.context)
-    private val serverService = Service.service
+    private val serverDatabase = ServerDatabase
+    private val sharedPreferences = MainApplication.context.getSharedPreferences(PREFERENCES_TAG, Context.MODE_PRIVATE)
+    private val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(MainApplication.context)
 
-    private fun syncWithServer() {
-        if (getFromSharedPreferences(LAST_SYNC_TAG, "1").toLong() + syncTime() * 3600L * 1000 > Calendar.getInstance().timeInMillis) {
-            return
+    val credentials: String
+        get() = "Token " + fromSP(API_KEY_TAG, "")
+
+    private fun syncFailed() = Log.e("Synchronization", "Synchronization app with server failed")
+
+    private fun syncComments(pointId: Long): Boolean {
+        val comments = serverDatabase.pointCommentService.getComments(pointId).execute()
+        return if (comments.isSuccessful) {
+            database.pointCommentDao.clearPointCommentCache()
+            comments.body()?.forEach { database.pointCommentDao.insert(it) }
+            true
+        } else {
+            syncFailed()
+            false
         }
-        Log.d("SYNC", "SYNC DOING")
-        saveInSharedPreferences(LAST_SYNC_TAG, Calendar.getInstance().timeInMillis.toString())
-        GlobalScope.async {
-            val types = serverService.getTypes().execute()
-            if (types.isSuccessful) {
-                database.getPointTypeDao().clearPointTypeCache()
-                for (type in types.body()!!) {
-                    database.getPointTypeDao().insert(type)
+    }
+
+    private fun syncRatings(pointId: Long): Boolean {
+        val ratings = serverDatabase.pointRatingService.getRating(pointId).execute()
+        return if (ratings.isSuccessful) {
+            database.pointRatingDao.clearPointRatingCache()
+            ratings.body()?.forEach { database.pointRatingDao.insert(it) }
+            true
+        } else {
+            syncFailed()
+            false
+        }
+    }
+
+    private fun syncImages(pointId: Long): Boolean {
+        val images = serverDatabase.pointImageService.getImages(pointId).execute()
+        return if (images.isSuccessful) {
+            database.pointImageDao.clearPointImageCache()
+            images.body()?.forEach { database.pointImageDao.insert(it) } // TODO
+            true
+        } else {
+            syncFailed()
+            false
+        }
+    }
+
+    private fun syncTypes(): Boolean {
+        val types = serverDatabase.pointTypeService.getTypes().execute()
+        return if (types.isSuccessful) {
+            database.pointTypeDao.clearPointTypeCache()
+            types.body()?.forEach { database.pointTypeDao.insert(it) }
+            true
+        } else {
+            syncFailed()
+            false
+        }
+    }
+
+    private fun syncUsers(): Boolean {
+        val users = serverDatabase.userService.getUsers().execute()
+        return if (users.isSuccessful) {
+            database.userDao.clearUserCache()
+            users.body()?.forEach { database.userDao.insert(it) }
+            true
+        } else {
+            syncFailed()
+            false
+        }
+    }
+
+    private fun syncPoints(): Boolean {
+        val points = serverDatabase.pointService.getPoints(0.0, 0.0).execute() // TODO coords
+        return if (points.isSuccessful) {
+            database.pointDao.clearPointCache()
+            points.body()?.forEach {
+                database.pointDao.insert(it)
+                if (!syncComments(it.id) || !syncRatings(it.id) || !syncImages(it.id)) {
+                    return false
                 }
-            } else {
-                Log.d("SYNC", "type failed")
             }
-            val response = serverService.getPoints(0.0, 0.0).execute()
-            if (response.isSuccessful) {
-                database.getPointDao().clearPointCache()
-                for (point in response.body()!!) {
-                    database.getPointDao().insert(point)
-                    val comments = serverService.getComments(point.id).execute()
-                    if (comments.isSuccessful) {
-                        database.getPointCommentDao().clearPointCommentCache()
-                        for (comment in comments.body()!!) {
-                            database.getPointCommentDao().insert(comment)
-                        }
-                    } else {
-                        Log.d("SYNC", "comment failed")
-                    }
-                    val ratings = serverService.getRating(point.id).execute()
-                    if (ratings.isSuccessful) {
-                        database.getPointRatingDao().clearPointRatingCache()
-                        for (rating in ratings.body()!!) {
-                            database.getPointRatingDao().insert(rating)
-                        }
-                    } else {
-                        Log.d("SYNC", "rating failed")
-                    }
-                    val images = serverService.getImages(point.id).execute()
-                    if (images.isSuccessful) {
-                        database.getPointImageDao().clearPointImageCache() // TODO
-                        for (image in images.body()!!) {
-                            database.getPointImageDao().insert(image)
-                        }
-                    } else {
-                        Log.d("SYNC", "images failed")
-                    }
+            true
+        } else {
+            syncFailed()
+            false
+        }
+    }
+
+    private fun sync() {
+        val now = Calendar.getInstance().timeInMillis
+        if (fromSP(LAST_SYNC_TAG, 0) + syncTime() * 3600L * 1000 <= now) {
+            saveSP(LAST_SYNC_TAG, now)
+            GlobalScope.launch {
+                syncUsers()
+                if (syncTypes()) {
+                    syncPoints()
                 }
-            } else {
-                Log.d("SYNC", "point failed")
             }
         }
     }
 
-    fun getPoints() : Flow<List<Point>> {
-        syncWithServer()
-        return database.getPointDao().getPoints()
+    private fun syncTime() = defaultPreferences.getString("sync_time", "1h")!![0].code
+
+    fun fromSP(tag: String, default: Long): Long {
+        return sharedPreferences.getLong(tag, default)
     }
 
-    fun getPoint(id: Long) : Flow<Point> {
-        syncWithServer()
-        return database.getPointDao().getPoint(id)
+    fun fromSP(tag: String, default: String): String {
+        return sharedPreferences.getString(tag, default)!!
     }
 
-    fun getPointTypes() : Flow<List<PointType>> {
-        syncWithServer()
-        return database.getPointTypeDao().getPointTypes()
+    fun fromSP(tag: String, default: Float): Float {
+        return sharedPreferences.getFloat(tag, default)
     }
 
-    fun addPoint(point: Point) {
-        GlobalScope.async {
-            val result = serverService.addPoint("Token " + getFromSharedPreferences(API_KEY_TAG), point).execute()
-            if (result.isSuccessful) {
-                database.getPointDao().insert(result.body()!!)
-            }
-        }
+    fun saveSP(tag: String, value: Long) {
+        val editor = sharedPreferences.edit()
+        editor.putLong(tag, value)
+        editor.apply()
     }
 
-    fun getFromSharedPreferences(tag: String, default: String = "") : String {
-        val sp = MainApplication.context.getSharedPreferences(PREFERENCES_TAG, Context.MODE_PRIVATE)
-        return sp.getString(tag, default)!!
-    }
-
-    fun saveInSharedPreferences(tag: String, value: String) {
-        val editor = MainApplication.context.getSharedPreferences(PREFERENCES_TAG, Context.MODE_PRIVATE).edit()
+    fun saveSP(tag: String, value: String) {
+        val editor = sharedPreferences.edit()
         editor.putString(tag, value)
         editor.apply()
     }
 
-    fun userLoggedIn() = MainApplication.context.getSharedPreferences(PREFERENCES_TAG, Context.MODE_PRIVATE).contains(LOGIN_TAG)
+    fun saveSP(tag: String, value: Float) {
+        val editor = sharedPreferences.edit()
+        editor.putFloat(tag, value)
+        editor.apply()
+    }
+
+    fun getPoints() : Flow<List<Point>> {
+        sync()
+        return database.pointDao.getPoints()
+    }
+
+    fun getPoint(id: Long) : Flow<Point> {
+        sync()
+        return database.pointDao.getPoint(id)
+    }
+
+    fun getPointTypes() : Flow<List<PointType>> {
+        sync()
+        return database.pointTypeDao.getPointTypes()
+    }
+
+    fun addPoint(point: Point) {
+        GlobalScope.launch {
+            val newPoint = serverDatabase.pointService.addPoint(credentials, point).execute()
+            if (newPoint.isSuccessful) {
+                database.pointDao.insert(newPoint.body()!!)
+            }
+        }
+    }
+
+    fun userLoggedIn() = sharedPreferences.contains(LOGIN_TAG)
 
     fun getComments(pointId: Long) : Flow<List<PointComment>> {
-        syncWithServer()
-        return database.getPointCommentDao().getComments(pointId)
+        sync()
+        return database.pointCommentDao.getComments(pointId)
     }
 
     fun getImages(pointId: Long) : Flow<List<PointImage>> {
-        syncWithServer()
-        return database.getPointImageDao().getImages(pointId)
+        sync()
+        return database.pointImageDao.getImages(pointId)
     }
 
     fun addComment(pointComment: PointComment) {
-        GlobalScope.async {
-            val result = serverService.addComment("Token " + getFromSharedPreferences(API_KEY_TAG), pointComment).execute()
-            if (result.isSuccessful) {
-                database.getPointCommentDao().insert(result.body()!!)
+        GlobalScope.launch {
+            val newComment = serverDatabase.pointCommentService.addComment(credentials, pointComment).execute()
+            if (newComment.isSuccessful) {
+                database.pointCommentDao.insert(newComment.body()!!)
             }
         }
     }
 
-    fun getTopUsers() : Flow<List<User>> {
-        syncWithServer()
-        return database.getUserDao().getTopUsers()
+    fun getUsers(): Flow<List<User>> {
+        sync()
+        return database.userDao.getUsers()
     }
 
-    fun getMyRanking() : Flow<List<User>> {
-        syncWithServer()
-        return database.getUserDao().getMyRanking()
-    }
-
-    fun getMyPointRating(pointId: Long) = database.getPointRatingDao().getRating(
-        pointId,
-        getFromSharedPreferences(LOGIN_TAG)
-    )
+    fun getPointsMyRating(pointId: Long) = database.pointRatingDao.getRating(pointId, fromSP(LOGIN_TAG, ""))
 
     fun ratePoint(pointRating: PointRating) {
-        GlobalScope.async {
-            val result = serverService.addRating("Token " + getFromSharedPreferences(API_KEY_TAG), pointRating).execute()
-            if (result.isSuccessful) {
-                database.getPointRatingDao().insert(result.body()!!)
+        GlobalScope.launch {
+            val newRating = serverDatabase.pointRatingService.addRating(credentials, pointRating).execute()
+            if (newRating.isSuccessful) {
+                database.pointRatingDao.insert(newRating.body()!!)
             }
         }
     }
 
-    fun addPicture(pointId: Long, imageBitmap: Bitmap) {
+    fun addPicture(pointId: Long, imageBitmap: Bitmap) { // TODO RENAME and all
         //imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, MainApplication.context.openFileOutput("temp", Context.MODE_PRIVATE)) // TODO
         val stream = ByteArrayOutputStream()
         imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        GlobalScope.async {
-            val result = serverService.addImage(
-                "Token " + getFromSharedPreferences(API_KEY_TAG),
-                pointId,
+        GlobalScope.launch {
+            val newImage = serverDatabase.pointImageService.addImage(
+                credentials, pointId,
                 RequestBody.create(MediaType.parse("image/png"), stream.toByteArray())
             ).execute()
-            if (result.isSuccessful) {
-                database.getPointImageDao().insert(result.body()!!) // TODO
+            if (newImage.isSuccessful) {
+                database.pointImageDao.insert(newImage.body()!!) //TODO
             }
         }
     }
 
-    fun autoLogin() = PreferenceManager.getDefaultSharedPreferences(MainApplication.context).getBoolean("autologin", true)
-
-    private fun syncTime() = PreferenceManager.getDefaultSharedPreferences(MainApplication.context).getString("sync_time", "1h")!![0].code
+    fun autoLogin() = defaultPreferences.getBoolean("autologin", true)
 
     fun logOut() {
-        val editor = MainApplication.context.getSharedPreferences(PREFERENCES_TAG, Context.MODE_PRIVATE).edit()
+        val editor = sharedPreferences.edit()
         editor.remove(LOGIN_TAG)
         editor.remove(API_KEY_TAG)
         editor.apply()

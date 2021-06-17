@@ -5,7 +5,7 @@ import com.example.youthspots.data.Repository
 import com.example.youthspots.data.entity.PointImage
 import com.example.youthspots.utils.Event
 
-class ImageViewModel(private val pointId: Long) : ViewModel() {
+class ImageViewModel(pointId: Long) : ViewModel() {
     companion object {
         fun provideFactory(id: Long) = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

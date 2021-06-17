@@ -3,8 +3,7 @@ package com.example.youthspots.utils
 import android.os.Bundle
 
 data class NavigationInfo(
-    val action: Int,
-    val parameters: List<Pair<String, Any>> = arrayListOf()
+    val action: Int, val parameters: List<Pair<String, Any>> = arrayListOf()
 ) {
     fun getBundledParameters() : Bundle {
         val bundle = Bundle()

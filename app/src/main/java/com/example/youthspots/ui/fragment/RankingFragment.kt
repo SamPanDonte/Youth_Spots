@@ -15,9 +15,7 @@ class RankingFragment : BaseFragment() {
 
     private val adapter = UserAdapter()
     private lateinit var binding: FragmentRankingBinding
-    private val mViewModel: RankingViewModel by viewModels {
-        RankingViewModel.provideFactory(adapter, viewLifecycleOwner)
-    }
+    private val mViewModel: RankingViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(
@@ -37,6 +35,12 @@ class RankingFragment : BaseFragment() {
         mViewModel.users.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
+        }
+
+        mViewModel.scrollEvent.observe(viewLifecycleOwner) { event ->
+            event.getContent()?.let {
+                binding.recyclerView.scrollToPosition(it)
+            }
         }
     }
 }

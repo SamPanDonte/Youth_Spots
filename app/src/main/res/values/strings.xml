@@ -43,4 +43,21 @@
     <string name="dislike">Dislike</string>
     <string name="autologin">Enable autologin</string>
     <string name="report_point_as_inappropriate">Report point as inappropriate</string>
+    <string name="sync_failed">Synchronisation with server failed</string>
+    <string name="entered_one">TEST</string>
+    <string name="entered_many">TEST2</string>
+    <string name="exited_one">EXITED</string>
+    <string name="exited_many">EXITED @</string>
+    <string name="channel_name">GeofenceNotification</string>
+    <string name="channel_description">GeofenceNotification</string>
+    <string name="notifiaction_title">Entered point of interest!</string>
+    <string name="picture_error">NO PICTURE</string>
+    <string name="geofence_added">Geofence added!</string>
+    <string name="geofence_not_added">Geofence not added!</string>
+    <string name="comment_add_error">You must fulfil comment!</string>
+    <string name="fulfill_all">Fulfill all fields!</string>
+    <string name="register_error">Cannot create account name might be taken</string>
+    <string name="server_connection_error">Cannot connect to server!</string>
+    <string name="login_error">Wrong username or password</string>
+    <string name="reported_point">point reported!</string>
 </resources>

@@ -3,6 +3,7 @@ package com.example.youthspots.ui.viewmodel
 import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.youthspots.MainApplication
+import com.example.youthspots.R
 import com.example.youthspots.data.Repository
 import com.example.youthspots.data.entity.PointComment
 
@@ -21,14 +22,15 @@ class CommentViewModel(private val pointId: Long) : ViewModel() {
 
     fun addComment() {
         if (comment.value == null || comment.value == "") {
-            Toast.makeText(MainApplication.context, "You must fulfil comment!", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                MainApplication.context,
+                MainApplication.context.getString(R.string.comment_add_error),
+                Toast.LENGTH_LONG
+            ).show()
             return
         }
-        // TODO Interent
         Repository.addComment(PointComment(
-            comment.value!!,
-            pointId,
-            Repository.getFromSharedPreferences(Repository.LOGIN_TAG),
+            comment.value!!, pointId, Repository.fromSP(Repository.LOGIN_TAG, ""),
         ))
     }
 }

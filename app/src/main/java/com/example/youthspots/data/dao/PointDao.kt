@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 abstract class PointDao : BaseDao<Point> {
     @Query("SELECT * FROM Point")
-    abstract fun getPoints() : Flow<List<Point>>
+    abstract fun getPoints(): Flow<List<Point>>
 
     @Query("SELECT * FROM Point WHERE id = :id")
-    abstract fun getPoint(id: Long) : Flow<Point>
+    abstract fun getPoint(id: Long): Flow<Point>
 
     @Query("DELETE FROM Point")
     abstract fun clearPointCache()

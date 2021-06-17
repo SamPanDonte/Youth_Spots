@@ -21,7 +21,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="@string/my_position"
-            android:onClick="@{()->viewModel.setMyRank()}"
+            android:onClick="@{()->viewModel.scrollMe()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -34,7 +34,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="@string/top_users"
-            android:onClick="@{()->viewModel.topRank()}"
+            android:onClick="@{()->viewModel.scrollTop()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button6" />

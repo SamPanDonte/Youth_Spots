@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -61,9 +59,8 @@ class PointDetailsFragment : BaseFragment() {
         observeModelNavigation(mViewModel)
 
         mViewModel.geofenceEvent.observe(viewLifecycleOwner) {
-
             if (PermissionUtils.checkAndRequestPermissions(
-                    this.requireActivity() as AppCompatActivity,
+                    this.activity as AppCompatActivity,
                     R.string.permission_rationale_location,
                     permissionResult,
                     null,
@@ -86,10 +83,10 @@ class PointDetailsFragment : BaseFragment() {
         geofencingClient.removeGeofences(arrayListOf(mViewModel.point.value!!.id.toString()))
         geofencingClient.addGeofences(mViewModel.getGeofencingRequest(), pendingIntent).run {
             addOnSuccessListener {
-                Toast.makeText(this@PointDetailsFragment.requireContext(), "Geofence added!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@PointDetailsFragment.requireContext(), getString(R.string.geofence_added), Toast.LENGTH_LONG).show()
             }
             addOnFailureListener {
-                Toast.makeText(this@PointDetailsFragment.requireContext(), "Geofence not added!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@PointDetailsFragment.requireContext(), getString(R.string.geofence_not_added), Toast.LENGTH_LONG).show()
             }
         }
     }

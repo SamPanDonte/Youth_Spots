@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.youthspots.R
 import com.example.youthspots.databinding.ActivityLoginBinding
-import com.example.youthspots.ui.viewmodel.BaseViewModel
 import com.example.youthspots.ui.viewmodel.LoginViewModel
 
 class LoginActivity : AppCompatActivity() {
@@ -22,11 +21,7 @@ class LoginActivity : AppCompatActivity() {
             viewModel = mViewModel
             lifecycleOwner = lifecycleOwner
         }
-        observeModelNavigation(mViewModel)
-    }
-
-    private fun observeModelNavigation(model : BaseViewModel) {
-        model.navigationEvent.observe(this) {
+        mViewModel.navigationEvent.observe(this) {
             startActivity(Intent(this, MainActivity::class.java))
         }
     }

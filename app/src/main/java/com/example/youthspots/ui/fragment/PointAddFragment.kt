@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +14,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.youthspots.R
 import com.example.youthspots.databinding.PointAddFragmentBinding
 import com.example.youthspots.ui.viewmodel.BaseViewModel
 import com.example.youthspots.ui.viewmodel.PointAddViewModel
+import com.example.youthspots.ui.viewmodel.SharedViewModel
 import com.example.youthspots.utils.Event
 import com.example.youthspots.utils.NavigationInfo
 import com.example.youthspots.utils.PermissionUtils
@@ -35,7 +36,7 @@ import com.google.android.gms.location.LocationServices
 class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private val mViewModel: PointAddViewModel by viewModels()
-    private var interstitialAd: InterstitialAd? = null
+    private val sharedViewModel: SharedViewModel by activityViewModels()
     private lateinit var locationProvider: FusedLocationProviderClient
     private lateinit var mBinding: PointAddFragmentBinding
 
@@ -43,15 +44,14 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
         mBinding = DataBindingUtil.inflate(
             inflater, R.layout.point_add_fragment, container, false
         )
-        val adRequest = AdRequest.Builder().build()
 
         InterstitialAd.load(
             this.requireContext(),
             "ca-app-pub-3940256099942544/1033173712",
-            adRequest,
+            AdRequest.Builder().build(),
             object : InterstitialAdLoadCallback() {
-                override fun onAdLoaded(p0: InterstitialAd) {
-                    interstitialAd = p0
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    sharedViewModel.interstitialAd = ad
                 }
             }
         )
@@ -65,14 +65,14 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
         }
-        val typeList = arrayListOf<String>()
+
         mBinding.editType.onItemSelectedListener = this
+
+        val typeList = arrayListOf<String>()
         val adapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, typeList)
         mBinding.editType.adapter = adapter
-        mViewModel.pointTypes.observe(viewLifecycleOwner) {
-            for (el in it) {
-                typeList.add(el.name)
-            }
+        mViewModel.pointTypes.observe(viewLifecycleOwner) { list ->
+            list.forEach { typeList.add(it.name) }
             adapter.notifyDataSetChanged()
         }
 
@@ -115,23 +115,25 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun observeModelNavigation(model : BaseViewModel) {
         model.navigationEvent.observe(this.viewLifecycleOwner, {
-            if (interstitialAd == null) {
+            if (sharedViewModel.interstitialAd == null) {
                 navigate(it)
             } else {
-                interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                sharedViewModel.interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
                     override fun onAdDismissedFullScreenContent() {
+                        sharedViewModel.interstitialAd = null
                         navigate(it)
                     }
 
                     override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                        sharedViewModel.interstitialAd = null
                         navigate(it)
                     }
 
                     override fun onAdShowedFullScreenContent() {
-                        interstitialAd = null
+                        sharedViewModel.interstitialAd = null
                     }
                 }
-                interstitialAd?.show(requireActivity())
+                sharedViewModel.interstitialAd?.show(requireActivity())
             }
         })
     }

@@ -1,6 +1,5 @@
 package com.example.youthspots.ui.viewmodel
 
-import android.provider.Settings
 import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.youthspots.MainApplication
@@ -14,7 +13,7 @@ import com.example.youthspots.utils.NavigationInfo
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
     companion object {
@@ -31,7 +30,7 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
 
 
     val point: LiveData<Point> = Repository.getPoint(pointId).asLiveData()
-    val rating: LiveData<PointRating> = Repository.getMyPointRating(pointId).asLiveData()
+    val rating: LiveData<PointRating> = Repository.getPointsMyRating(pointId).asLiveData()
 
     fun viewImages() {
         navigateToFragment.value = Event(NavigationInfo(
@@ -67,16 +66,19 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
         if (rating.value == null) {
             Repository.ratePoint(PointRating(
                 type,
-                Repository.getFromSharedPreferences(Repository.LOGIN_TAG),
+                Repository.fromSP(Repository.LOGIN_TAG, ""),
                 pointId
             ))
         }
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     fun reportPoint() {
-        GlobalScope.async {
-            Service.service.report("Token " + Repository.getFromSharedPreferences(Repository.API_KEY_TAG), pointId).execute()
-        }
-        Toast.makeText(MainApplication.context, "point reported!", Toast.LENGTH_LONG).show()
+        GlobalScope.launch { Service.service.report(Repository.credentials, pointId).execute() }
+        Toast.makeText(
+            MainApplication.context,
+            MainApplication.context.getString(R.string.reported_point),
+            Toast.LENGTH_LONG
+        ).show()
     }
 }

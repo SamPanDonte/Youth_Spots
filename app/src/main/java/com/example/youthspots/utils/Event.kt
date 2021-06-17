@@ -5,9 +5,7 @@ class Event<out T>(private val content: T) {
         private set
 
     fun getContent() : T? {
-        return if (handled) {
-            null
-        } else {
+        return if (handled) { null } else {
             handled = true
             content
         }

@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -21,7 +22,10 @@ import com.example.youthspots.ui.viewmodel.ImageViewModel
 
 class ImageViewFragment : BaseFragment() {
 
-    private val REQUEST_IMAGE_CAPTURE = 1
+    companion object {
+        private const val REQUEST_IMAGE_CAPTURE = 1
+    }
+
     private val adapter = ImageAdapter()
     private val args: ImageViewFragmentArgs by navArgs()
     private lateinit var binding: FragmentImagesViewBinding
@@ -29,7 +33,7 @@ class ImageViewFragment : BaseFragment() {
         ImageViewModel.provideFactory(args.pointId)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_images_view, container, false
         )
@@ -55,18 +59,20 @@ class ImageViewFragment : BaseFragment() {
     }
 
     private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_IMAGE_CAPTURE) //TODO
+//            val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
+//                it
+//            }
+            //getContent.launch("TEST")
         } catch (e: ActivityNotFoundException) {
-            // display error state to the user
+            Toast.makeText(this.requireContext(), getString(R.string.picture_error), Toast.LENGTH_LONG).show()
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            Repository.addPicture(args.pointId, imageBitmap)
+            Repository.addPicture(args.pointId, data?.extras?.get("data") as Bitmap)
         }
     }
 }

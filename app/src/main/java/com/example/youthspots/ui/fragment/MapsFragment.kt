@@ -9,13 +9,10 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.example.youthspots.R
-import com.example.youthspots.data.Repository
-import com.example.youthspots.ui.viewmodel.BaseViewModel
+import com.example.youthspots.data.entity.Point
 import com.example.youthspots.ui.viewmodel.SharedViewModel
-import com.example.youthspots.utils.Event
 import com.example.youthspots.utils.NavigationInfo
 import com.example.youthspots.utils.PermissionUtils
 import com.google.android.gms.ads.AdError
@@ -33,44 +30,47 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class MapsFragment : Fragment(), OnMapReadyCallback {
     private val sharedViewModel: SharedViewModel by activityViewModels()
-    lateinit var map : GoogleMap
-    private var interstitialAd: InterstitialAd? = null
+    private lateinit var map : GoogleMap
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val adRequest = AdRequest.Builder().build()
-
-        InterstitialAd.load(
-            this.requireContext(),
-            "ca-app-pub-3940256099942544/1033173712",
-            adRequest,
-            object : InterstitialAdLoadCallback() {
-                override fun onAdLoaded(p0: InterstitialAd) {
-                    interstitialAd = p0
+        if (sharedViewModel.interstitialAd == null) {
+            InterstitialAd.load(
+                this.requireContext(),
+                "ca-app-pub-3940256099942544/1033173712",
+                AdRequest.Builder().build(),
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdLoaded(ad: InterstitialAd) { sharedViewModel.interstitialAd = ad }
                 }
-            }
-        )
-
+            )
+        }
         return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        observeModelNavigation(sharedViewModel)
         mapFragment?.getMapAsync(this)
     }
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        if (PermissionUtils.checkPermissions(
-                activity as AppCompatActivity,
+        if (PermissionUtils.checkPermissions(activity as AppCompatActivity,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-        )) {
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
             map.isMyLocationEnabled = true
         }
-        map.setOnMarkerClickListener(sharedViewModel)
+
+        map.setOnMarkerClickListener { marker ->
+            sharedViewModel.points.value?.find {
+                it.latitude == marker.position.latitude && it.longitude == marker.position.longitude
+            }?.let {
+                pointClick(it)
+                true
+            }
+            false
+        }
+
         map.moveCamera(
             CameraUpdateFactory.newCameraPosition(
                 CameraPosition(
@@ -81,15 +81,21 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 )
             )
         )
-        Repository.getPoints().asLiveData().observe(viewLifecycleOwner) {
-            for (point in it) {
-                map.addMarker(MarkerOptions()
-                    .position(LatLng(point.latitude, point.longitude))
-                    .title(point.name)
-                )?.let { marker ->
-                    sharedViewModel.markers.add(Pair(point, marker))
-                }
 
+        sharedViewModel.points.value?.forEach {
+            map.addMarker(MarkerOptions()
+                .position(LatLng(it.latitude, it.longitude))
+                .title(it.name)
+            )
+        }
+
+        sharedViewModel.points.observe(viewLifecycleOwner) { list ->
+            map.clear()
+            list.forEach {
+                map.addMarker(MarkerOptions()
+                    .position(LatLng(it.latitude, it.longitude))
+                    .title(it.name)
+                )
             }
         }
     }
@@ -105,32 +111,35 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun observeModelNavigation(model : BaseViewModel) {
-        model.navigationEvent.observe(this.viewLifecycleOwner, {
-            if (interstitialAd == null || sharedViewModel.adCounter != 0) {
-                navigate(it)
-            } else {
-                interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        navigate(it)
-                    }
-
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-                        navigate(it)
-                    }
-
-                    override fun onAdShowedFullScreenContent() {
-                        interstitialAd = null
-                    }
-                }
-                interstitialAd?.show(requireActivity())
-            }
-        })
+    private fun navigate(event: NavigationInfo) {
+        event.let { info ->
+            findNavController().navigate(info.action, info.getBundledParameters())
+        }
     }
 
-    private fun navigate(event: Event<NavigationInfo>) {
-        event.getContent()?.let { info ->
-            findNavController().navigate(info.action, info.getBundledParameters())
+    private fun pointClick(marker: Point) {
+        val info = NavigationInfo(
+            R.id.action_mapsFragment_to_pointDetailsFragment,
+            arrayListOf(Pair("pointId", marker.id))
+        )
+        if (sharedViewModel.interstitialAd != null && sharedViewModel.adCounter == 0L) {
+            sharedViewModel.interstitialAd!!.fullScreenContentCallback = object : FullScreenContentCallback() {
+
+                override fun onAdDismissedFullScreenContent() {
+                    sharedViewModel.interstitialAd = null
+                    navigate(info)
+                }
+
+                override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                    sharedViewModel.interstitialAd = null
+                    navigate(info)
+                }
+
+                override fun onAdShowedFullScreenContent() { sharedViewModel.interstitialAd = null }
+            }
+            sharedViewModel.interstitialAd!!.show(requireActivity())
+        } else {
+            navigate(info)
         }
     }
 }

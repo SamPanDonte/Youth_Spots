@@ -16,21 +16,18 @@ import com.example.youthspots.data.entity.*
     exportSchema = false
 )
 abstract class CacheDatabase : RoomDatabase() {
-    abstract fun getPointDao() : PointDao
-    abstract fun getPointCommentDao() : PointCommentDao
-    abstract fun getPointImageDao() : PointImageDao
-    abstract fun getPointRatingDao() : PointRatingDao
-    abstract fun getPointTypeDao() : PointTypeDao
-    abstract fun getUserDao() : UserDao
-
-    fun clearCache() {
-        getPointImageDao().clearPointImageCache()
-        getPointRatingDao().clearPointRatingCache()
-        getPointCommentDao().clearPointCommentCache()
-        getPointDao().clearPointCache()
-        getUserDao().clearUserCache()
-        getPointTypeDao().clearPointTypeCache()
-    }
+    abstract val pointDao: PointDao
+    abstract val pointCommentDao: PointCommentDao
+    abstract val pointImageDao: PointImageDao
+    abstract val pointRatingDao: PointRatingDao
+    abstract val pointTypeDao: PointTypeDao
+    abstract val userDao: UserDao
+    //abstract fun getPointDao() : PointDao
+    //abstract fun getPointCommentDao() : PointCommentDao
+    //abstract fun getPointImageDao() : PointImageDao TODO REMOVE
+    //abstract fun getPointRatingDao() : PointRatingDao
+    //abstract fun getPointTypeDao() : PointTypeDao
+    //abstract fun getUserDao() : UserDao
 
     companion object {
         @Volatile

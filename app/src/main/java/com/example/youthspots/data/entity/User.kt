@@ -5,13 +5,13 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class User(
-    val name: String,
+    val username: String,
     val score: Int,
     val place: Int,
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     val id: Long
 ) {
     fun summary() : String {
-        return "$place. $name - $score"
+        return "$place. $username - $score"
     }
 }

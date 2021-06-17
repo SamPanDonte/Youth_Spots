@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.asLiveData
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -15,27 +16,26 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
+    private lateinit var bottomNav: BottomNavigationView
     private val viewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!Repository.userLoggedIn()) {
-            startActivity(Intent(this, LoginActivity::class.java))
-        } else {
-            MobileAds.initialize(this) {
-                viewModel.adsLoaded = true
-            }
+        if (Repository.userLoggedIn()) {
             setContentView(R.layout.activity_main)
+            viewModel.points = Repository.getPoints().asLiveData()
+            MobileAds.initialize(this) { viewModel.adsLoaded = true }
             navController = findNavController(R.id.nav_host_fragment_container)
-            findViewById<BottomNavigationView>(R.id.bottomNavigationView).setupWithNavController(navController) // TODO
+            bottomNav = findViewById(R.id.bottomNavigationView)
+            bottomNav.setupWithNavController(navController)
+        } else {
+            startActivity(Intent(this, LoginActivity::class.java))
         }
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.save()
-        if (!Repository.autoLogin()) {
-            Repository.logOut()
-        }
+        if (!Repository.autoLogin()) { Repository.logOut() }
     }
 }

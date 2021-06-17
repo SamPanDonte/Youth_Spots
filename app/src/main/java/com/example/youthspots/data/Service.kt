@@ -5,13 +5,13 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object Service {
+object Service {// TODO REMOVE
 
     val service: ServerService
 
     init {
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://172.21.9.66:8000/") //todo
+            .baseUrl("https://sampandonte.pythonanywhere.com/") //todo
             .addConverterFactory(GsonConverterFactory.create())
             .client(OkHttpClient.Builder().build())
             .build()
