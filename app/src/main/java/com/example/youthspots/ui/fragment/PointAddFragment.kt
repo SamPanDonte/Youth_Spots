@@ -39,6 +39,12 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private lateinit var locationProvider: FusedLocationProviderClient
     private lateinit var mBinding: PointAddFragmentBinding
+    private val launcher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
+            it[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
+            getLocation()
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(
@@ -81,12 +87,7 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
         if (PermissionUtils.checkAndRequestPermissions(
                 activity as AppCompatActivity,
                 R.string.permission_rationale_add_point,
-                registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-                    if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
-                        it[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
-                        getLocation()
-                    }
-                },
+                launcher,
                 { _, _ ->
                     Toast.makeText(context, getString(R.string.add_point_failure), Toast.LENGTH_LONG).show()
                     findNavController().navigate(R.id.action_pointAddFragment_to_mapsFragment)

@@ -1,7 +1,5 @@
 package com.example.youthspots.ui.fragment
 
-import android.app.Activity.RESULT_OK
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -9,7 +7,6 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -23,13 +20,13 @@ import com.example.youthspots.ui.viewmodel.ImageViewModel
 
 class ImageViewFragment : BaseFragment() {
 
-    companion object {
-        private const val REQUEST_IMAGE_CAPTURE = 1
-    }
-
     private val adapter = ImageAdapter()
     private val args: ImageViewFragmentArgs by navArgs()
     private lateinit var binding: FragmentImagesViewBinding
+    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        Repository.addImage(args.pointId, it.data?.extras?.get("data") as Bitmap)
+    }
+
     private val mViewModel: ImageViewModel by viewModels {
         ImageViewModel.provideFactory(args.pointId)
     }
@@ -55,29 +52,7 @@ class ImageViewFragment : BaseFragment() {
         }
 
         mViewModel.imagePickEvent.observe(viewLifecycleOwner) {
-            dispatchTakePictureIntent()
-        }
-    }
-
-    private fun dispatchTakePictureIntent() {
-        try {
-            //startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_IMAGE_CAPTURE) //TODO
-            val el = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                it.data?.extras?.get("data") as Bitmap
-            }
-            el.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
-//            val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
-//                it
-//            }
-            //getContent.launch("TEST")
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this.requireContext(), getString(R.string.picture_error), Toast.LENGTH_LONG).show()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Repository.addImage(args.pointId, data?.extras?.get("data") as Bitmap)
+            launcher.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
         }
     }
 }
