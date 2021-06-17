@@ -19,7 +19,7 @@ import com.example.youthspots.MainApplication
     ]
 )
 data class PointImage(
-    val image: String,
+    var image: String,
     val point: Long,
     @PrimaryKey(autoGenerate = false)
     val id: Long = 0

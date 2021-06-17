@@ -72,7 +72,7 @@ class ImageViewFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Repository.addPicture(args.pointId, data?.extras?.get("data") as Bitmap)
+            Repository.addImage(args.pointId, data?.extras?.get("data") as Bitmap)
         }
     }
 }

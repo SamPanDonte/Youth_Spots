@@ -2,17 +2,18 @@ package com.example.youthspots.data
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
-import android.widget.Toast
 import androidx.preference.PreferenceManager
 import com.example.youthspots.MainApplication
-import com.example.youthspots.R
 import com.example.youthspots.data.entity.*
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
+import okhttp3.MultipartBody.Part.createFormData
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -68,7 +69,7 @@ object Repository {
         val images = serverDatabase.pointImageService.getImages(pointId).execute()
         return if (images.isSuccessful) {
             database.pointImageDao.clearPointImageCache()
-            images.body()?.forEach { database.pointImageDao.insert(it) } // TODO
+            images.body()?.forEach { downloadImage(it) }
             true
         } else {
             syncFailed()
@@ -223,18 +224,35 @@ object Repository {
         }
     }
 
-    fun addPicture(pointId: Long, imageBitmap: Bitmap) { // TODO RENAME and all
-        //imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, MainApplication.context.openFileOutput("temp", Context.MODE_PRIVATE)) // TODO
+    fun addImage(pointId: Long, imageBitmap: Bitmap) {
         val stream = ByteArrayOutputStream()
         imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         GlobalScope.launch {
             val newImage = serverDatabase.pointImageService.addImage(
                 credentials, pointId,
-                RequestBody.create(MediaType.parse("image/png"), stream.toByteArray())
+                createFormData("image", "image.png", RequestBody.create(MediaType.parse("multipart/form-data"), stream.toByteArray()))
             ).execute()
             if (newImage.isSuccessful) {
-                database.pointImageDao.insert(newImage.body()!!) //TODO
+                downloadImage(newImage.body()!!)
             }
+        }
+    }
+
+    private fun downloadImage(pointImage: PointImage) {
+        val request = Request.Builder()
+            .url("https://sampandonte.pythonanywhere.com" + pointImage.image)
+            .build()
+        val response = OkHttpClient().newCall(request).execute()
+        if (response.isSuccessful) {
+            val bitmap = BitmapFactory.decodeStream(response.body()!!.byteStream())
+            val name = Calendar.getInstance().timeInMillis.toString()
+            val output = MainApplication.context.openFileOutput(
+                name, Context.MODE_PRIVATE
+            )
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+            output.close()
+            pointImage.image = name
+            database.pointImageDao.insert(pointImage)
         }
     }
 
