@@ -2,7 +2,7 @@ package com.example.youthspots.data.entity
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.widget.ImageView
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -20,6 +20,7 @@ import com.example.youthspots.MainApplication
 )
 data class PointImage(
     var image: String,
+    @ColumnInfo(index = true)
     val point: Long,
     @PrimaryKey(autoGenerate = false)
     val id: Long = 0

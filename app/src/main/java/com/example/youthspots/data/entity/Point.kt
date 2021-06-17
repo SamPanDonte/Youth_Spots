@@ -1,5 +1,6 @@
 package com.example.youthspots.data.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -10,7 +11,7 @@ import androidx.room.PrimaryKey
             entity = PointType::class,
             parentColumns = arrayOf("id"),
             childColumns = arrayOf("type"),
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         )
     ]
 )
@@ -22,5 +23,6 @@ data class Point(
     val latitude: Double,
     @PrimaryKey(autoGenerate = false)
     val id: Long = 0,
+    @ColumnInfo(index = true)
     val type: Long = 0
 )

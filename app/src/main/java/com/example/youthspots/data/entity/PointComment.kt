@@ -1,5 +1,6 @@
 package com.example.youthspots.data.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -16,6 +17,7 @@ import androidx.room.PrimaryKey
 )
 data class PointComment(
     val content: String,
+    @ColumnInfo(index = true)
     val point: Long,
     val author: String,
     @PrimaryKey(autoGenerate = false)
