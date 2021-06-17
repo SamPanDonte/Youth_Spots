@@ -5,7 +5,7 @@ import androidx.lifecycle.*
 import com.example.youthspots.MainApplication
 import com.example.youthspots.R
 import com.example.youthspots.data.Repository
-import com.example.youthspots.data.Service
+import com.example.youthspots.data.ServerDatabase
 import com.example.youthspots.data.entity.Point
 import com.example.youthspots.data.entity.PointRating
 import com.example.youthspots.utils.Event
@@ -74,7 +74,9 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
 
     @Suppress("BlockingMethodInNonBlockingContext")
     fun reportPoint() {
-        GlobalScope.launch { Service.service.report(Repository.credentials, pointId).execute() }
+        GlobalScope.launch {
+            ServerDatabase.pointService.reportPoint(Repository.credentials, pointId)
+        }
         Toast.makeText(
             MainApplication.context,
             MainApplication.context.getString(R.string.reported_point),

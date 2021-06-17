@@ -102,7 +102,7 @@ object Repository {
     }
 
     private fun syncPoints(): Boolean {
-        val points = serverDatabase.pointService.getPoints(0.0, 0.0).execute() // TODO coords
+        val points = serverDatabase.pointService.getPoints(0.0, 0.0).execute() // TODO coordinates
         return if (points.isSuccessful) {
             database.pointDao.clearPointCache()
             points.body()?.forEach {
@@ -230,7 +230,12 @@ object Repository {
         GlobalScope.launch {
             val newImage = serverDatabase.pointImageService.addImage(
                 credentials, pointId,
-                createFormData("image", "image.png", RequestBody.create(MediaType.parse("multipart/form-data"), stream.toByteArray()))
+                createFormData(
+                    "image", "image.png",
+                    RequestBody.create(
+                        MediaType.parse("multipart/form-data"), stream.toByteArray()
+                    )
+                )
             ).execute()
             if (newImage.isSuccessful) {
                 downloadImage(newImage.body()!!)

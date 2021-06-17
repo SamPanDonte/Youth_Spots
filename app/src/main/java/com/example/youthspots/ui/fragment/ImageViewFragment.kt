@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -60,7 +61,11 @@ class ImageViewFragment : BaseFragment() {
 
     private fun dispatchTakePictureIntent() {
         try {
-            startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_IMAGE_CAPTURE) //TODO
+            //startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_IMAGE_CAPTURE) //TODO
+            val el = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                it.data?.extras?.get("data") as Bitmap
+            }
+            el.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
 //            val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
 //                it
 //            }

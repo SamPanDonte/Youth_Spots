@@ -22,12 +22,6 @@ abstract class CacheDatabase : RoomDatabase() {
     abstract val pointRatingDao: PointRatingDao
     abstract val pointTypeDao: PointTypeDao
     abstract val userDao: UserDao
-    //abstract fun getPointDao() : PointDao
-    //abstract fun getPointCommentDao() : PointCommentDao
-    //abstract fun getPointImageDao() : PointImageDao TODO REMOVE
-    //abstract fun getPointRatingDao() : PointRatingDao
-    //abstract fun getPointTypeDao() : PointTypeDao
-    //abstract fun getUserDao() : UserDao
 
     companion object {
         @Volatile

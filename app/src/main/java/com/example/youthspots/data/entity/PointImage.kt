@@ -25,8 +25,4 @@ data class PointImage(
     val id: Long = 0
 ) {
     fun getBitmap(): Bitmap = BitmapFactory.decodeStream(MainApplication.context.openFileInput(image))
-
-    fun setImage(view: ImageView) {
-        view.setImageBitmap(BitmapFactory.decodeStream(MainApplication.context.openFileInput(image))) // TODO REMOVE
-    }
 }
