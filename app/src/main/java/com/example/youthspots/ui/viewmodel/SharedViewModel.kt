@@ -1,19 +1,12 @@
 package com.example.youthspots.ui.viewmodel
 
-import androidx.lifecycle.LiveData
+import android.content.Context
 import com.example.youthspots.data.Repository
-import com.example.youthspots.data.entity.Point
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 
 class SharedViewModel : BaseViewModel() {
-    var cameraLongitude = Repository.fromSP(Repository.CAMERA_LONG_TAG, 0.0f).toDouble()
-    var cameraLatitude = Repository.fromSP(Repository.CAMERA_LAT_TAG, 0.0f).toDouble()
-    var cameraZoom = Repository.fromSP(Repository.CAMERA_ZOOM_TAG, 0.0f)
-    var cameraTilt = Repository.fromSP(Repository.CAMERA_TILT_TAG, 0.0f)
-    var cameraBearing = Repository.fromSP(Repository.CAMERA_BEARING_TAG, 0.0f)
-
-    lateinit var points: LiveData<List<Point>>
-
     var interstitialAd: InterstitialAd? = null
     var adsLoaded = false
     var adCounter: Long = Repository.fromSP(Repository.AD_COUNTER_TAG, 4)
@@ -28,12 +21,30 @@ class SharedViewModel : BaseViewModel() {
             }
         }
 
+    fun loadAd(context: Context) {
+        if (interstitialAd == null) {
+            InterstitialAd.load(
+                context, "ca-app-pub-3940256099942544/1033173712",
+                AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+                    override fun onAdLoaded(ad: InterstitialAd) { interstitialAd = ad }
+                }
+            )
+        }
+    }
+
+    fun getCounterAd() = if (adCounter == 0L) {
+        val ad = interstitialAd
+        interstitialAd = null
+        ad
+    } else { null }
+
+    fun getAd(): InterstitialAd? {
+        val ad = interstitialAd
+        interstitialAd = null
+        return ad
+    }
+
     fun save() {
-        Repository.saveSP(Repository.CAMERA_LONG_TAG, cameraLongitude.toFloat())
-        Repository.saveSP(Repository.CAMERA_LAT_TAG, cameraLatitude.toFloat())
-        Repository.saveSP(Repository.CAMERA_ZOOM_TAG, cameraZoom)
-        Repository.saveSP(Repository.CAMERA_TILT_TAG, cameraTilt)
-        Repository.saveSP(Repository.CAMERA_BEARING_TAG, cameraBearing)
         Repository.saveSP(Repository.AD_COUNTER_TAG, adCounter)
     }
 }

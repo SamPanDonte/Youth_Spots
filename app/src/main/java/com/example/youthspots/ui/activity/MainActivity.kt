@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         if (Repository.userLoggedIn()) {
             setContentView(R.layout.activity_main)
-            viewModel.points = Repository.getPoints().asLiveData()
             MobileAds.initialize(this) { viewModel.adsLoaded = true }
             navController = findNavController(R.id.nav_host_fragment_container)
             bottomNav = findViewById(R.id.bottomNavigationView)

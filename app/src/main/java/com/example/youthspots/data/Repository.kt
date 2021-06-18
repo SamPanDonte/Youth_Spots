@@ -44,7 +44,7 @@ object Repository {
     private fun syncComments(pointId: Long): Boolean {
         val comments = serverDatabase.pointCommentService.getComments(pointId).execute()
         return if (comments.isSuccessful) {
-            database.pointCommentDao.clearPointCommentCache()
+            database.pointCommentDao.clearPointCommentCache(pointId)
             comments.body()?.forEach { database.pointCommentDao.insert(it) }
             true
         } else {
@@ -56,7 +56,7 @@ object Repository {
     private fun syncRatings(pointId: Long): Boolean {
         val ratings = serverDatabase.pointRatingService.getRating(pointId).execute()
         return if (ratings.isSuccessful) {
-            database.pointRatingDao.clearPointRatingCache()
+            database.pointRatingDao.clearPointRatingCache(pointId)
             ratings.body()?.forEach { database.pointRatingDao.insert(it) }
             true
         } else {
@@ -68,7 +68,7 @@ object Repository {
     private fun syncImages(pointId: Long): Boolean {
         val images = serverDatabase.pointImageService.getImages(pointId).execute()
         return if (images.isSuccessful) {
-            database.pointImageDao.clearPointImageCache()
+            database.pointImageDao.clearPointImageCache(pointId)
             images.body()?.forEach { downloadImage(it) }
             true
         } else {
@@ -250,7 +250,7 @@ object Repository {
         val response = OkHttpClient().newCall(request).execute()
         if (response.isSuccessful) {
             val bitmap = BitmapFactory.decodeStream(response.body()!!.byteStream())
-            val name = Calendar.getInstance().timeInMillis.toString()
+            val name = pointImage.id.toString() + ".png"
             val output = MainApplication.context.openFileOutput(
                 name, Context.MODE_PRIVATE
             )

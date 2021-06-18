@@ -13,6 +13,6 @@ abstract class PointRatingDao : BaseDao<PointRating> {
     @Query("SELECT * FROM PointRating WHERE point = :pointId AND author = :author LIMIT 1")
     abstract fun getRating(pointId: Long, author: String): Flow<PointRating>
 
-    @Query("DELETE FROM PointRating")
-    abstract fun clearPointRatingCache()
+    @Query("DELETE FROM PointRating WHERE point = :pointId")
+    abstract fun clearPointRatingCache(pointId: Long)
 }

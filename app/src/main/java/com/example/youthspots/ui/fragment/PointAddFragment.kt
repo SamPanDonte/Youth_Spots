@@ -2,7 +2,6 @@ package com.example.youthspots.ui.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,17 +18,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.youthspots.R
 import com.example.youthspots.databinding.PointAddFragmentBinding
-import com.example.youthspots.ui.viewmodel.BaseViewModel
 import com.example.youthspots.ui.viewmodel.PointAddViewModel
 import com.example.youthspots.ui.viewmodel.SharedViewModel
 import com.example.youthspots.utils.Event
 import com.example.youthspots.utils.NavigationInfo
 import com.example.youthspots.utils.PermissionUtils
 import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
@@ -50,17 +45,7 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
         mBinding = DataBindingUtil.inflate(
             inflater, R.layout.point_add_fragment, container, false
         )
-
-        InterstitialAd.load(
-            this.requireContext(),
-            "ca-app-pub-3940256099942544/1033173712",
-            AdRequest.Builder().build(),
-            object : InterstitialAdLoadCallback() {
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    sharedViewModel.interstitialAd = ad
-                }
-            }
-        )
+        sharedViewModel.loadAd(this.requireContext())
         return mBinding.root
     }
 
@@ -82,8 +67,7 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
             adapter.notifyDataSetChanged()
         }
 
-        locationProvider = LocationServices.getFusedLocationProviderClient(activity as Activity)
-        observeModelNavigation(mViewModel)
+        locationProvider = LocationServices.getFusedLocationProviderClient(requireActivity())
         if (PermissionUtils.checkAndRequestPermissions(
                 activity as AppCompatActivity,
                 R.string.permission_rationale_add_point,
@@ -97,6 +81,22 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
             )) {
             getLocation()
         }
+
+        mViewModel.navigationEvent.observe(this.viewLifecycleOwner, {
+            val ad = sharedViewModel.getAd()
+            if (ad == null) { navigate(it) } else {
+                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() { navigate(it) }
+
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                        navigate(it)
+                    }
+
+                    override fun onAdShowedFullScreenContent() { }
+                }
+                ad.show(this.requireActivity())
+            }
+        })
     }
 
     @SuppressLint("MissingPermission")
@@ -112,31 +112,6 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         mViewModel.pointType = null
-    }
-
-    private fun observeModelNavigation(model : BaseViewModel) {
-        model.navigationEvent.observe(this.viewLifecycleOwner, {
-            if (sharedViewModel.interstitialAd == null) {
-                navigate(it)
-            } else {
-                sharedViewModel.interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        sharedViewModel.interstitialAd = null
-                        navigate(it)
-                    }
-
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-                        sharedViewModel.interstitialAd = null
-                        navigate(it)
-                    }
-
-                    override fun onAdShowedFullScreenContent() {
-                        sharedViewModel.interstitialAd = null
-                    }
-                }
-                sharedViewModel.interstitialAd?.show(requireActivity())
-            }
-        })
     }
 
     private fun navigate(event: Event<NavigationInfo>) {

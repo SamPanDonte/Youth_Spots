@@ -10,6 +10,6 @@ abstract class PointImageDao : BaseDao<PointImage> {
     @Query("SELECT * FROM PointImage WHERE point = :pointId")
     abstract fun getImages(pointId: Long): Flow<List<PointImage>>
 
-    @Query("DELETE FROM PointImage")
-    abstract fun clearPointImageCache()
+    @Query("DELETE FROM PointImage WHERE point = :pointId")
+    abstract fun clearPointImageCache(pointId: Long)
 }

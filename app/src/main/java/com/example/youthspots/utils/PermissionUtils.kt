@@ -2,6 +2,7 @@ package com.example.youthspots.utils
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
@@ -22,9 +23,9 @@ object PermissionUtils {
         return false
     }
 
-    fun checkPermissions(activity: AppCompatActivity, vararg permissions: String) : Boolean {
+    fun checkPermissions(context: Context, vararg permissions: String) : Boolean {
         for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(activity.applicationContext, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                 return false
             }
         }
