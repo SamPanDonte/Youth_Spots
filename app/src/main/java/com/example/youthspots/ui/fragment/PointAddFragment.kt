@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,12 +28,12 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
-class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class PointAddFragment : Fragment() {
+    private lateinit var mBinding: PointAddFragmentBinding
 
     private val mViewModel: PointAddViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private lateinit var locationProvider: FusedLocationProviderClient
-    private lateinit var mBinding: PointAddFragmentBinding
     private val launcher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
         if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
             it[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
@@ -46,6 +45,7 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
         mBinding = DataBindingUtil.inflate(
             inflater, R.layout.point_add_fragment, container, false
         )
+        locationProvider = LocationServices.getFusedLocationProviderClient(requireActivity())
         sharedViewModel.loadAd(this.requireContext())
         return mBinding.root
     }
@@ -53,37 +53,35 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val adapter = ArrayAdapter(
+            requireContext(), R.layout.support_simple_spinner_dropdown_item, mViewModel.typeList
+        )
         mBinding.apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
+            editType.adapter = adapter
+            editType.onItemSelectedListener = mViewModel
         }
 
-        mBinding.editType.onItemSelectedListener = this
-
-        val typeList = arrayListOf<String>()
-        val adapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, typeList)
-        mBinding.editType.adapter = adapter
         mViewModel.pointTypes.observe(viewLifecycleOwner) { list ->
-            list.forEach { typeList.add(it.name) }
+            list.forEach { mViewModel.typeList.add(it.name) }
             adapter.notifyDataSetChanged()
         }
 
-        locationProvider = LocationServices.getFusedLocationProviderClient(requireActivity())
         if (PermissionUtils.checkAndRequestPermissions(
-                activity as AppCompatActivity,
-                R.string.permission_rationale_add_point,
-                launcher,
-                { _, _ ->
-                    Toast.makeText(context, getString(R.string.add_point_failure), Toast.LENGTH_LONG).show()
+                activity as AppCompatActivity, R.string.permission_rationale_add_point,
+                launcher, { _, _ ->
+                    Toast.makeText(
+                        context, getString(R.string.add_point_failure), Toast.LENGTH_LONG
+                    ).show()
                     findNavController().navigate(R.id.action_pointAddFragment_to_mapsFragment)
-                },
-                Manifest.permission.ACCESS_COARSE_LOCATION,
+                }, Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            )) {
+        )) {
             getLocation()
         }
 
-        mViewModel.navigationEvent.observe(this.viewLifecycleOwner, {
+        mViewModel.navigationEvent.observe(viewLifecycleOwner) {
             val ad = sharedViewModel.getAd()
             if (ad == null) { navigate(it) } else {
                 ad.fullScreenContentCallback = object : FullScreenContentCallback() {
@@ -97,7 +95,7 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 }
                 ad.show(this.requireActivity())
             }
-        })
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -106,14 +104,6 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
             mViewModel.location = it
             Repository.lastKnownLocation = it
         }
-    }
-
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        mViewModel.pointType = position
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-        mViewModel.pointType = null
     }
 
     private fun navigate(event: Event<NavigationInfo>) {

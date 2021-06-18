@@ -65,9 +65,7 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
     fun ratePoint(type: Boolean) {
         if (rating.value == null) {
             Repository.ratePoint(PointRating(
-                type,
-                Repository.fromSP(Repository.LOGIN_TAG, ""),
-                pointId
+                type, Repository.fromSP(Repository.LOGIN_TAG, ""), pointId
             ))
         }
     }

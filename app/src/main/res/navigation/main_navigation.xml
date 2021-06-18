@@ -23,9 +23,6 @@
         android:name="com.example.youthspots.ui.fragment.PointDetailsFragment"
         android:label="fragment_point_details"
         tools:layout="@layout/fragment_point_details" >
-        <action
-            android:id="@+id/action_pointDetailsFragment_to_mapsFragment"
-            app:destination="@id/mapsFragment" />
         <argument
             android:name="pointId"
             app:argType="long"

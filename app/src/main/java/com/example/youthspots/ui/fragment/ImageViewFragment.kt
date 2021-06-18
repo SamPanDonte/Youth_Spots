@@ -25,21 +25,23 @@ class ImageViewFragment : BaseFragment() {
     private val args: ImageViewFragmentArgs by navArgs()
     private lateinit var binding: FragmentImagesViewBinding
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        val result = if (it.data?.extras?.get("data") is Bitmap) {
-            it.data?.extras?.get("data")
-        } else {
-            if (Build.VERSION.SDK_INT < 28) {
-                @Suppress("DEPRECATION")
-                MediaStore.Images.Media.getBitmap(
-                    requireActivity().contentResolver, it.data?.data!!
-                )
-            } else {
-                ImageDecoder.decodeBitmap(ImageDecoder.createSource(
-                    requireActivity().contentResolver, it.data?.data!!
-                ))
+        val result = when {
+            it.data?.extras?.get("data") is Bitmap -> it.data?.extras?.get("data")
+            it.data?.data != null -> {
+                if (Build.VERSION.SDK_INT < 28) {
+                    @Suppress("DEPRECATION")
+                    MediaStore.Images.Media.getBitmap(
+                        requireActivity().contentResolver, it.data?.data!!
+                    )
+                } else {
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(
+                        requireActivity().contentResolver, it.data?.data!!
+                    ))
+                }
             }
-        } as Bitmap
-        Repository.addImage(args.pointId, result)
+            else -> return@registerForActivityResult
+        }
+        Repository.addImage(args.pointId, result as Bitmap)
     }
 
     private val mViewModel: ImageViewModel by viewModels {
