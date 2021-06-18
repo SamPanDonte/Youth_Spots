@@ -2,6 +2,7 @@ package com.example.youthspots.ui.viewmodel
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.os.Looper
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,6 +13,10 @@ import com.example.youthspots.data.Repository
 import com.example.youthspots.utils.Event
 import com.example.youthspots.utils.NavigationInfo
 import com.example.youthspots.utils.PermissionUtils
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -19,12 +24,18 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
-class MapViewModel(private val lifecycleOwner: LifecycleOwner) : BaseViewModel(), OnMapReadyCallback {
+class MapViewModel(
+    private val lifecycleOwner: LifecycleOwner,
+    private val locationClient: FusedLocationProviderClient
+) : BaseViewModel(), OnMapReadyCallback {
     companion object {
-        fun provideFactory(lifecycle: LifecycleOwner) = object : ViewModelProvider.Factory {
+        fun provideFactory(
+            lifecycle: LifecycleOwner,
+            locationClient: FusedLocationProviderClient
+        ) = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return MapViewModel(lifecycle) as T
+                return MapViewModel(lifecycle, locationClient) as T
             }
         }
     }
@@ -47,6 +58,18 @@ class MapViewModel(private val lifecycleOwner: LifecycleOwner) : BaseViewModel()
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION)) {
             map.isMyLocationEnabled = true
+            locationClient.requestLocationUpdates(
+                LocationRequest.create().also { it.interval = 20000 },
+                object : LocationCallback() {
+                    override fun onLocationResult(locationResult: LocationResult?) {
+                        locationResult ?: return
+                        for (location in locationResult.locations){
+                            Repository.lastKnownLocation = location
+                        }
+                    }
+                },
+                Looper.getMainLooper()
+            )
         }
 
         map.setOnMarkerClickListener { marker ->

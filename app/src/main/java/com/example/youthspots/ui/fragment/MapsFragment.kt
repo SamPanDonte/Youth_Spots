@@ -14,12 +14,15 @@ import com.example.youthspots.ui.viewmodel.SharedViewModel
 import com.example.youthspots.utils.NavigationInfo
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.SupportMapFragment
 
 class MapsFragment : Fragment() {
     private val adViewModel: SharedViewModel by activityViewModels()
     private val mapViewModel: MapViewModel by viewModels {
-        MapViewModel.provideFactory(viewLifecycleOwner)
+        MapViewModel.provideFactory(
+            viewLifecycleOwner, LocationServices.getFusedLocationProviderClient(requireActivity())
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -17,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.youthspots.R
+import com.example.youthspots.data.Repository
 import com.example.youthspots.databinding.PointAddFragmentBinding
 import com.example.youthspots.ui.viewmodel.PointAddViewModel
 import com.example.youthspots.ui.viewmodel.SharedViewModel
@@ -103,6 +104,7 @@ class PointAddFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun getLocation() {
         locationProvider.lastLocation.addOnSuccessListener {
             mViewModel.location = it
+            Repository.lastKnownLocation = it
         }
     }
 

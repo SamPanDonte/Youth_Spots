@@ -3,6 +3,7 @@ package com.example.youthspots.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.util.Log
 import androidx.preference.PreferenceManager
 import com.example.youthspots.MainApplication
@@ -22,6 +23,8 @@ import java.util.*
 object Repository {
     private const val PREFERENCES_TAG = "YouthSpotsSP"
     private const val LAST_SYNC_TAG = "LastSync"
+    private const val SYNC_LA_TAG = "SyncLatitude"
+    private const val SYNC_LO_TAG = "SyncLongitude"
     const val LOGIN_TAG = "Login"
     const val API_KEY_TAG = "ApiKey"
     const val CAMERA_LONG_TAG = "CameraLong"
@@ -38,6 +41,23 @@ object Repository {
 
     val credentials: String
         get() = "Token " + fromSP(API_KEY_TAG, "")
+
+    var lastKnownLocation: Location = Location("none")
+        set(value) {
+            field = value
+            val last = Location("none")
+            last.latitude = lastSyncLatitude
+            last.longitude = lastSyncLongitude
+            if (value.distanceTo(last) > 5000.0f) {
+                lastSyncLatitude = value.latitude
+                lastSyncLongitude = value.longitude
+                saveSP(SYNC_LA_TAG, lastSyncLatitude.toFloat())
+                saveSP(SYNC_LO_TAG, lastSyncLongitude.toFloat())
+                GlobalScope.launch { sync() }
+            }
+        }
+    private var lastSyncLatitude: Double = fromSP(SYNC_LA_TAG, 0.0f).toDouble()
+    private var lastSyncLongitude: Double = fromSP(SYNC_LO_TAG, 0.0f).toDouble()
 
     private fun syncFailed() = Log.e("Synchronization", "Synchronization app with server failed")
 
@@ -102,7 +122,7 @@ object Repository {
     }
 
     private fun syncPoints(): Boolean {
-        val points = serverDatabase.pointService.getPoints(0.0, 0.0).execute() // TODO coordinates
+        val points = serverDatabase.pointService.getPoints(lastSyncLongitude, lastSyncLatitude).execute()
         return if (points.isSuccessful) {
             database.pointDao.clearPointCache()
             points.body()?.forEach {
