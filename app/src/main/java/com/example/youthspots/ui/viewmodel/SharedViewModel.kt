@@ -9,8 +9,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 class SharedViewModel : BaseViewModel() {
     var interstitialAd: InterstitialAd? = null
     var adsLoaded = false
-    var adCounter: Long = Repository.fromSP(Repository.AD_COUNTER_TAG, 4)
-        private set
+    private var adCounter: Long = Repository.fromSP(Repository.AD_COUNTER_TAG, 4)
         get () {
             return if (field == 0L) {
                 field = 4

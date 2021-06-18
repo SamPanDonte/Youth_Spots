@@ -1,5 +1,7 @@
 package com.example.youthspots.ui.viewmodel
 
+import android.content.Intent
+import android.provider.MediaStore
 import androidx.lifecycle.*
 import com.example.youthspots.data.Repository
 import com.example.youthspots.data.entity.PointImage
@@ -14,13 +16,17 @@ class ImageViewModel(pointId: Long) : ViewModel() {
             }
         }
     }
-    private val imagePick = MutableLiveData<Event<Any?>>()
-    val imagePickEvent: LiveData<Event<Any?>>
+    private val imagePick = MutableLiveData<Event<Intent>>()
+    val imagePickEvent: LiveData<Event<Intent>>
         get() = imagePick
 
     val images: LiveData<List<PointImage>> = Repository.getImages(pointId).asLiveData()
 
-    fun addImage() {
-        imagePick.value = Event(null)
+    fun takeImage() {
+        imagePick.value = Event(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
+    }
+
+    fun pickImage() {
+        imagePick.value = Event(Intent(Intent.ACTION_PICK).also { it.type = "image/*" })
     }
 }

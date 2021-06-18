@@ -1,7 +1,8 @@
 package com.example.youthspots.ui.fragment
 
-import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -24,7 +25,21 @@ class ImageViewFragment : BaseFragment() {
     private val args: ImageViewFragmentArgs by navArgs()
     private lateinit var binding: FragmentImagesViewBinding
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        Repository.addImage(args.pointId, it.data?.extras?.get("data") as Bitmap)
+        val result = if (it.data?.extras?.get("data") is Bitmap) {
+            it.data?.extras?.get("data")
+        } else {
+            if (Build.VERSION.SDK_INT < 28) {
+                @Suppress("DEPRECATION")
+                MediaStore.Images.Media.getBitmap(
+                    requireActivity().contentResolver, it.data?.data!!
+                )
+            } else {
+                ImageDecoder.decodeBitmap(ImageDecoder.createSource(
+                    requireActivity().contentResolver, it.data?.data!!
+                ))
+            }
+        } as Bitmap
+        Repository.addImage(args.pointId, result)
     }
 
     private val mViewModel: ImageViewModel by viewModels {
@@ -51,8 +66,8 @@ class ImageViewFragment : BaseFragment() {
             adapter.notifyDataSetChanged()
         }
 
-        mViewModel.imagePickEvent.observe(viewLifecycleOwner) {
-            launcher.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
+        mViewModel.imagePickEvent.observe(viewLifecycleOwner) { event ->
+            event.getContent()?.let { launcher.launch(it) }
         }
     }
 }
