@@ -2,14 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/pointAddFragment"
         android:title="@string/add_point"
-        android:menuCategory="secondary" />
+        android:menuCategory="secondary"
+        android:icon="@drawable/ic_baseline_add_location_alt_24" />
     <item android:id="@+id/mapsFragment"
         android:title="@string/app_name"
-        android:menuCategory="secondary" /> <!-- TODO -->
-    <item android:id="@+id/settingsFragment"
-        android:title="@string/settings"
-        android:menuCategory="secondary" />
+        android:menuCategory="secondary"
+        android:icon="@drawable/ic_baseline_map_24" />
     <item android:id="@+id/rankingFragment"
         android:title="@string/ranking"
-        android:menuCategory="secondary" />
+        android:menuCategory="secondary"
+        android:icon="@drawable/ic_baseline_group_24" />
+    <item android:id="@+id/settingsFragment"
+        android:title="@string/settings"
+        android:menuCategory="secondary"
+        android:icon="@drawable/ic_baseline_settings_24"/>
 </menu>

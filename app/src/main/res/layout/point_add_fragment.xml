@@ -11,64 +11,74 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?background">
 
         <EditText
             android:id="@+id/editName"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
             android:ems="10"
-            android:text="@={viewModel.name}"
+            android:hint="@string/name"
+            android:importantForAutofill="no"
             android:inputType="textPersonName"
+            android:text="@={viewModel.name}"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:autofillHints="@string/name"
             tools:ignore="LabelFor" />
 
         <EditText
             android:id="@+id/editDesc"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
+            android:layout_height="200dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:autofillHints="@string/description"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/description"
             android:ems="10"
             android:gravity="start|top"
             android:inputType="textMultiLine"
             android:text="@={viewModel.description}"
-            app:layout_constraintBottom_toTopOf="@+id/button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editType"
-            tools:ignore="LabelFor" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+            tools:ignore="Autofill,LabelFor" />
 
-        <Spinner
-            android:id="@+id/editType"
-            android:layout_width="409dp"
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/spinner_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editName" />
+            app:layout_constraintTop_toBottomOf="@+id/editName">
+
+            <Spinner
+                android:id="@+id/editType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:popupBackground="@drawable/spinner_background"
+                android:textAlignment="center" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/button"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
-            android:text="@string/submit"
             android:onClick="@{()->viewModel.submit()}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/submit"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editDesc" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

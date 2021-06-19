@@ -78,7 +78,7 @@ class GeofenceReceiver : BroadcastReceiver() {
             .setContentTitle(ctx.getString(R.string.notifiaction_title))
             .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setSmallIcon(R.drawable.ic_launcher_background) // TODO
+            .setSmallIcon(R.drawable.ic_baseline_location_on_24)
             .setContentIntent(PendingIntent.getActivity(
                     ctx, 0, Intent(ctx, MainActivity::class.java), 0
             )).build()

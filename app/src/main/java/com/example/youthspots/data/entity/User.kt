@@ -11,7 +11,6 @@ data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Long
 ) {
-    fun summary() : String {
-        return "$place. $username - $score"
-    }
+    fun summary() = "$place. $username"
+    fun scoreString() = score.toString()
 }

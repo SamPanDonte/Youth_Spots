@@ -26,7 +26,6 @@
     <string name="description">Description</string>
     <string name="submit">Submit</string>
     <string name="login">Login</string>
-    <string name="password">Password</string>
     <string name="log_in">Log in</string>
     <string name="register">Register</string>
     <string name="pictures">Pictures</string>
@@ -38,7 +37,7 @@
     <string name="my_position">My position</string>
     <string name="top_users">Top users</string>
     <string name="ranking">Ranking</string>
-    <string name="notify_when_close">Notify when close</string>
+    <string name="notify_when_close">Notify</string>
     <string name="like">Like</string>
     <string name="dislike">Dislike</string>
     <string name="autologin">Enable autologin</string>
@@ -61,4 +60,6 @@
     <string name="login_error">Wrong username or password</string>
     <string name="reported_point">point reported!</string>
     <string name="add_image_from_gallery">Add image from gallery</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 </resources>
