@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="viewModel"
             type="com.example.youthspots.ui.viewmodel.LoginViewModel" />
@@ -14,6 +15,16 @@
         android:layout_height="match_parent"
         tools:context=".ui.activity.LoginActivity"
         android:background="?backgroundColor">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:indeterminate="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
+            android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}" />
 
         <EditText
             android:id="@+id/editTextTextPersonName"
@@ -50,6 +61,7 @@
             tools:ignore="LabelFor" />
 
         <LinearLayout
+            android:id="@+id/linearLayout7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -75,6 +87,7 @@
                 android:onClick="@{()->viewModel.register()}"
                 android:text="@string/register"
                 tools:ignore="ButtonStyle" />
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,10 @@ package com.example.youthspots.ui.viewmodel
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Looper
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,9 +23,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 
 class MapViewModel(
     private val lifecycleOwner: LifecycleOwner,
@@ -40,11 +41,11 @@ class MapViewModel(
         }
     }
 
-    var cameraLongitude = Repository.fromSP(Repository.CAMERA_LONG_TAG, 0.0f).toDouble()
-    var cameraLatitude = Repository.fromSP(Repository.CAMERA_LAT_TAG, 0.0f).toDouble()
-    var cameraZoom = Repository.fromSP(Repository.CAMERA_ZOOM_TAG, 0.0f)
-    var cameraTilt = Repository.fromSP(Repository.CAMERA_TILT_TAG, 0.0f)
-    var cameraBearing = Repository.fromSP(Repository.CAMERA_BEARING_TAG, 0.0f)
+    private var cameraLongitude = Repository.fromSP(Repository.CAMERA_LONG_TAG, 0.0f).toDouble()
+    private var cameraLatitude = Repository.fromSP(Repository.CAMERA_LAT_TAG, 0.0f).toDouble()
+    private var cameraZoom = Repository.fromSP(Repository.CAMERA_ZOOM_TAG, 0.0f)
+    private var cameraTilt = Repository.fromSP(Repository.CAMERA_TILT_TAG, 0.0f)
+    private var cameraBearing = Repository.fromSP(Repository.CAMERA_BEARING_TAG, 0.0f)
 
     private lateinit var map : GoogleMap
 
@@ -96,8 +97,20 @@ class MapViewModel(
         points.value?.forEach {
             map.addMarker(
                 MarkerOptions()
-                .position(LatLng(it.latitude, it.longitude))
-                .title(it.name)
+                    .icon(bitMapFromVector(when (it.type) {
+                        2L -> R.drawable.ic_baseline_music_note_24
+                        3L -> R.drawable.ic_baseline_restaurant_24
+                        4L -> R.drawable.ic_baseline_beach_access_24
+                        5L -> R.drawable.ic_baseline_deck_24
+                        6L -> R.drawable.ic_baseline_nature_people_24
+                        7L -> R.drawable.ic_baseline_home_24
+                        8L -> R.drawable.ic_baseline_house_siding_24
+                        9L -> R.drawable.ic_baseline_wine_bar_24
+                        else -> R.drawable.ic_baseline_location_on_24
+                    }))
+                    .anchor(0.5f, 0.5f)
+                    .position(LatLng(it.latitude, it.longitude))
+                    .title(it.name)
             )
         }
 
@@ -106,8 +119,19 @@ class MapViewModel(
             list.forEach {
                 map.addMarker(
                     MarkerOptions()
-                    .position(LatLng(it.latitude, it.longitude))
-                    .title(it.name)
+                        .icon(bitMapFromVector(when (it.type) {
+                            2L -> R.drawable.ic_baseline_music_note_24
+                            3L -> R.drawable.ic_baseline_restaurant_24
+                            4L -> R.drawable.ic_baseline_beach_access_24
+                            5L -> R.drawable.ic_baseline_deck_24
+                            6L -> R.drawable.ic_baseline_nature_people_24
+                            7L -> R.drawable.ic_baseline_home_24
+                            8L -> R.drawable.ic_baseline_house_siding_24
+                            9L -> R.drawable.ic_baseline_wine_bar_24
+                            else -> R.drawable.ic_baseline_location_on_24
+                        }))
+                        .position(LatLng(it.latitude, it.longitude))
+                        .title(it.name)
                 )
             }
         }
@@ -126,5 +150,23 @@ class MapViewModel(
         Repository.saveSP(Repository.CAMERA_ZOOM_TAG, cameraZoom)
         Repository.saveSP(Repository.CAMERA_TILT_TAG, cameraTilt)
         Repository.saveSP(Repository.CAMERA_BEARING_TAG, cameraBearing)
+    }
+
+    private fun bitMapFromVector(vectorResID:Int): BitmapDescriptor {
+        val background = ContextCompat.getDrawable(MainApplication.context, R.drawable.ic_location_background)
+        background!!.setBounds(
+            0, 0, background.intrinsicWidth, background.intrinsicHeight
+        )
+        val vectorDrawable = ContextCompat.getDrawable(MainApplication.context, vectorResID)
+        vectorDrawable!!.setBounds(
+            8,8, vectorDrawable.intrinsicWidth + 8, vectorDrawable.intrinsicHeight + 8
+        )
+        val bitmap = Bitmap.createBitmap(
+            background.intrinsicWidth, background.intrinsicHeight, Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        background.draw(canvas)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }

@@ -1,23 +1,7 @@
 <resources>
     <string name="app_name">Youth Spots</string>
     <string name="title_activity_maps">Map</string>
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="settings">Settings</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_point">Add point</string>
     <string name="permission_rationale_location">Application wants to use your location to notify you when you are close to point</string>
     <string name="permission_rationale_add_point">Application needs your location to add place where you are to map.</string>
@@ -32,7 +16,7 @@
     <string name="comments">Comments</string>
     <string name="image_of_point">Image of point</string>
     <string name="add_comment">Add comment</string>
-    <string name="comment_autofill">Write comment...</string>
+    <string name="comment_autofill">Write comment…</string>
     <string name="add_image">Take photo</string>
     <string name="my_position">My position</string>
     <string name="top_users">Top users</string>
@@ -43,23 +27,24 @@
     <string name="autologin">Enable autologin</string>
     <string name="report_point_as_inappropriate">Report point as inappropriate</string>
     <string name="sync_failed">Synchronisation with server failed</string>
-    <string name="entered_one">TEST</string>
-    <string name="entered_many">TEST2</string>
-    <string name="exited_one">EXITED</string>
-    <string name="exited_many">EXITED @</string>
-    <string name="channel_name">GeofenceNotification</string>
-    <string name="channel_description">GeofenceNotification</string>
-    <string name="notifiaction_title">Entered point of interest!</string>
-    <string name="picture_error">NO PICTURE</string>
-    <string name="geofence_added">Geofence added!</string>
-    <string name="geofence_not_added">Geofence not added!</string>
-    <string name="comment_add_error">You must fulfil comment!</string>
-    <string name="fulfill_all">Fulfill all fields!</string>
-    <string name="register_error">Cannot create account name might be taken</string>
+    <string name="entered_one">You just entered one point of interest from Youth Spots app!</string>
+    <string name="entered_many">You just entered two or more points of interest from Youth Spots app!</string>
+    <string name="exited_one">You just exited one point of interest from Youth Spots app!</string>
+    <string name="exited_many">You just exited two or more points of interest from Youth Spots app!</string>
+    <string name="channel_name">Geofence Notification</string>
+    <string name="channel_description">Notifications sent when entering or exiting point</string>
+    <string name="notification_title">Entered point of interest!</string>
+    <string name="image_error">Image not found</string>
+    <string name="geofence_added">Successfully added notification!</string>
+    <string name="geofence_not_added">Error occurred notification not added!</string>
+    <string name="comment_add_error">You must write your comment above!</string>
+    <string name="fulfill_all">You must fill all fields!</string>
+    <string name="register_error">Cannot create account! (name might be taken)</string>
     <string name="server_connection_error">Cannot connect to server!</string>
     <string name="login_error">Wrong username or password</string>
-    <string name="reported_point">point reported!</string>
-    <string name="add_image_from_gallery">Add image from gallery</string>
+    <string name="reported_point">Point reported!</string>
+    <string name="add_image_from_gallery">Image from gallery</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <!-- TODO strings to pl, check on pc, server filter, prepare server -->
 </resources>

@@ -75,9 +75,10 @@ class GeofenceReceiver : BroadcastReceiver() {
     private fun sendNotification(ctx: Context, text: String) {
         createChannel(ctx)
         val notification = NotificationCompat.Builder(ctx, CHANNEL_ID)
-            .setContentTitle(ctx.getString(R.string.notifiaction_title))
+            .setContentTitle(ctx.getString(R.string.notification_title))
             .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
             .setSmallIcon(R.drawable.ic_baseline_location_on_24)
             .setContentIntent(PendingIntent.getActivity(
                     ctx, 0, Intent(ctx, MainActivity::class.java), 0

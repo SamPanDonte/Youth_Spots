@@ -70,7 +70,6 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
         }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     fun reportPoint() {
         GlobalScope.launch {
             ServerDatabase.pointService.reportPoint(Repository.credentials, pointId)

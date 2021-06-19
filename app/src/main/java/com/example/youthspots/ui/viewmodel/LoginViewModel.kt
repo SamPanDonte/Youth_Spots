@@ -16,6 +16,7 @@ import retrofit2.Response
 class LoginViewModel : BaseViewModel() {
     val name : MutableLiveData<String> = MutableLiveData()
     val password : MutableLiveData<String> = MutableLiveData()
+    val loading : MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun register() {
         if (name.value == null || name.value == "" || password.value == null || password.value == null) {
@@ -26,6 +27,7 @@ class LoginViewModel : BaseViewModel() {
             ).show()
             return
         }
+        loading.value = true
         ServerDatabase.userService.register(AuthData(name.value!!, password.value!!)).enqueue(
             object : retrofit2.Callback<Token> {
 
@@ -41,6 +43,7 @@ class LoginViewModel : BaseViewModel() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
+                    loading.value = false
                 }
 
                 override fun onFailure(call: Call<Token>, t: Throwable) {
@@ -49,6 +52,7 @@ class LoginViewModel : BaseViewModel() {
                         MainApplication.context.getString(R.string.server_connection_error),
                         Toast.LENGTH_LONG
                     ).show()
+                    loading.value = false
                 }
             }
         )
@@ -63,6 +67,7 @@ class LoginViewModel : BaseViewModel() {
             ).show()
             return
         }
+        loading.value = true
         ServerDatabase.userService.login(AuthData(name.value!!, password.value!!)).enqueue(
             object : retrofit2.Callback<Token> {
 
@@ -78,6 +83,7 @@ class LoginViewModel : BaseViewModel() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
+                    loading.value = false
                 }
 
                 override fun onFailure(call: Call<Token>, t: Throwable) {
@@ -86,6 +92,7 @@ class LoginViewModel : BaseViewModel() {
                         MainApplication.context.getString(R.string.server_connection_error),
                         Toast.LENGTH_LONG
                     ).show()
+                    loading.value = false
                 }
             }
         )

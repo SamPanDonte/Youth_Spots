@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_maps" >
         <action
             android:id="@+id/action_mapsFragment_to_pointDetailsFragment"
-            app:destination="@id/pointDetailsFragment" />
+            app:destination="@id/pointDetailsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -29,10 +31,14 @@
             android:defaultValue="0L" />
         <action
             android:id="@+id/action_pointDetailsFragment_to_commentViewFragment"
-            app:destination="@id/commentViewFragment" />
+            app:destination="@id/commentViewFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
             android:id="@+id/action_pointDetailsFragment_to_imagesViewFragment"
-            app:destination="@id/imagesViewFragment" />
+            app:destination="@id/imagesViewFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/pointAddFragment"
@@ -41,7 +47,9 @@
         tools:layout="@layout/point_add_fragment" >
         <action
             android:id="@+id/action_pointAddFragment_to_mapsFragment"
-            app:destination="@id/mapsFragment" />
+            app:destination="@id/mapsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/commentViewFragment"

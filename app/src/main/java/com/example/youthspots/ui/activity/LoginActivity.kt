@@ -19,7 +19,7 @@ class LoginActivity : AppCompatActivity() {
         val binding: ActivityLoginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         binding.apply {
             viewModel = mViewModel
-            lifecycleOwner = lifecycleOwner
+            lifecycleOwner = this@LoginActivity
         }
         mViewModel.navigationEvent.observe(this) {
             startActivity(Intent(this, MainActivity::class.java))
