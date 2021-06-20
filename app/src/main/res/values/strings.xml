@@ -46,5 +46,6 @@
     <string name="add_image_from_gallery">Image from gallery</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
-    <!-- TODO strings to pl, check on pc, server filter, prepare server -->
+    <string name="synchronize">Synchronize</string>
+    <string name="auto_sync">Auto sync after</string>
 </resources>

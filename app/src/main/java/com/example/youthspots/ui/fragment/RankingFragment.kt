@@ -17,7 +17,7 @@ class RankingFragment : BaseFragment() {
     private lateinit var binding: FragmentRankingBinding
     private val mViewModel: RankingViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_ranking, container, false
         )

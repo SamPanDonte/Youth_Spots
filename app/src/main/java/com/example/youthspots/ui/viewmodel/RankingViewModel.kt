@@ -6,6 +6,8 @@ import androidx.lifecycle.asLiveData
 import com.example.youthspots.data.Repository
 import com.example.youthspots.data.entity.User
 import com.example.youthspots.utils.Event
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class RankingViewModel : BaseViewModel() {
     private val scroll = MutableLiveData<Event<Int>>()
@@ -23,4 +25,6 @@ class RankingViewModel : BaseViewModel() {
             users.value?.indexOfFirst { it.username == Repository.fromSP(Repository.LOGIN_TAG, "") }!!
         )
     }
+
+    fun refresh() = GlobalScope.launch { Repository.syncUsers() }
 }

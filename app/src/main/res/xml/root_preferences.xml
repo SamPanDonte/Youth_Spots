@@ -7,8 +7,8 @@
         app:defaultValue="true" />
 
     <ListPreference
-        app:defaultValue="1"
-        android:title="Auto sync after"
+        app:defaultValue="1h"
+        android:title="@string/auto_sync"
         app:entries="@array/auto_sync"
         app:entryValues="@array/auto_sync"
         android:key="sync_time"

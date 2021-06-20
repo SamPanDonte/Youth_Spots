@@ -109,7 +109,7 @@ object Repository {
         }
     }
 
-    private fun syncUsers(): Boolean {
+    fun syncUsers(): Boolean {
         val users = serverDatabase.userService.getUsers().execute()
         return if (users.isSuccessful) {
             database.userDao.clearUserCache()

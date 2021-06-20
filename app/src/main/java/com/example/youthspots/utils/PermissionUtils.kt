@@ -64,7 +64,8 @@ object PermissionUtils {
         private val stringRes: Int,
         private val callback: ActivityResultLauncher<Array<String>>,
         private val failedCallback: android.content.DialogInterface.OnClickListener?,
-        private val permissions: Array<String>) : DialogFragment() {
+        private val permissions: Array<String>
+    ) : DialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return AlertDialog.Builder(activity)
                 .setMessage(stringRes)

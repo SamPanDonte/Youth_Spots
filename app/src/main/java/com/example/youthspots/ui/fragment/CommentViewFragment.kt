@@ -21,7 +21,7 @@ class CommentViewFragment : BaseFragment() {
         CommentViewModel.provideFactory(args.pointId)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_comment_view, container, false
         )
