@@ -130,6 +130,7 @@ class MapViewModel(
                             9L -> R.drawable.ic_baseline_wine_bar_24
                             else -> R.drawable.ic_baseline_location_on_24
                         }))
+                        .anchor(0.5f, 0.5f)
                         .position(LatLng(it.latitude, it.longitude))
                         .title(it.name)
                 )

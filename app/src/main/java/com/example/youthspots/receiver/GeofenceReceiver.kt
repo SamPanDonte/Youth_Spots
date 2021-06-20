@@ -77,6 +77,7 @@ class GeofenceReceiver : BroadcastReceiver() {
         val notification = NotificationCompat.Builder(ctx, CHANNEL_ID)
             .setContentTitle(ctx.getString(R.string.notification_title))
             .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle())
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setSmallIcon(R.drawable.ic_baseline_location_on_24)
