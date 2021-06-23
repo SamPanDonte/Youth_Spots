@@ -72,7 +72,7 @@ class PointDetailsViewModel(private val pointId: Long) : BaseViewModel() {
 
     fun reportPoint() {
         GlobalScope.launch {
-            ServerDatabase.pointService.reportPoint(Repository.credentials, pointId)
+            ServerDatabase.pointService.reportPoint(Repository.credentials, pointId).execute()
         }
         Toast.makeText(
             MainApplication.context,

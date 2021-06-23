@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class UserDao : BaseDao<User> {
-    @Query("SELECT * FROM User ORDER BY place")
+    @Query("SELECT * FROM User ORDER BY score DESC")
     abstract fun getUsers(): Flow<List<User>>
 
     @Query("DELETE FROM User")
